@@ -1,0 +1,9 @@
+package uz.pizzaking.utils;
+
+public interface Texts {
+    String about_uz = "Pizza King — bu nafaqat mazali pizzalar, balki sizning har bir buyurtmangizda o‘zingizni alohida his qilishingiz uchun yaratilgan xizmatdir. Bizning maqsadimiz — eng yangi ingredientlardan tayyorlangan, issiq va sifatli pizzalarni eshigingizgacha tez yetkazib berish. Pizza King 2010-yilda tashkil topganidan beri mijozlarimizni lazzatlanishning haqiqiy qirollari sifatida ko‘rishni o‘z oldiga maqsad qilib qo‘ygan. Har bir pizza — bu siz uchun maxsus tayyorlangan taom, har bir yetkazib berish — sizga bo‘lgan e’tiborimizning bir qismidir. Biz bilan birga pizza dunyosida o‘z o‘rningizni toping!";
+    String about_en = "Pizza King is more than just delicious pizzas — it’s a service designed to make you feel special with every order. Our mission is to deliver hot, high-quality pizzas made from the freshest ingredients right to your door, and to do it fast. Since starting in 2010, Pizza King has been dedicated to treating our customers like true royalty in the world of pizza. Every pizza is crafted with care just for you, and every delivery is a reflection of our commitment to your satisfaction. Join us and discover your place in the kingdom of pizza!";
+    String about_ru = "Pizza King — это не просто вкусные пиццы, а сервис, созданный для того, чтобы вы чувствовали себя особенными с каждым заказом. Наша цель — быстро доставлять горячую и качественную пиццу, приготовленную из самых свежих ингредиентов, прямо к вашей двери. С момента основания в 2010 году Pizza King стремится видеть в своих клиентах настоящих королей мира пиццы. Каждая пицца — это блюдо, приготовленное специально для вас, а каждая доставка — часть нашего внимания к вам. Присоединяйтесь к нам и найдите своё место в королевстве пиццы!";
+
+
+}
