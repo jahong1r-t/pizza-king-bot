@@ -33,5 +33,23 @@ public interface Buttons {
     String CALL_RU = "Телефон 📞";
     String ABOUT_RU = "О нас ℹ️";
 
+    /// Admin menu uz
+    String USERS_UZ = "Foydalanuvchilar 👥";
+    String STATISTICS_UZ = "Statistika 📈";
+    String MESSAGE_FOR_ALL_UZ = "Hamma uchun xabar yuboring 📨";
+    String SETTINGS_ADMIN_UZ = "Sozlamalar ⚙️";
 
+    /// Admin menu en
+    String USERS_EN = "Users 👥";
+    String STATISTICS_EN = "Statistics 📈";
+    String MESSAGE_FOR_ALL_EN = "Send message for all 📨";
+    String SETTINGS_ADMIN_EN = "Settings ⚙️";
+
+    /// /// Admin menu ru
+    String USERS_RU = "Пользователи 👥";
+    String STATISTICS_RU = "Статистика 📈";
+    String MESSAGE_FOR_ALL_RU = "Отправить сообщение всем 📨";
+    String SETTINGS_ADMIN_RU = "Настройки ⚙️";
 }
+
+

@@ -1,4 +1,4 @@
-package uz.pizzaking.entity;
+package uz.pizzaking.entity.enums;
 
 public enum Languages {
     UZ, RU, EN

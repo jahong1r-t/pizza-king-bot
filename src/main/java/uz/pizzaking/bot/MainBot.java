@@ -29,7 +29,15 @@ public class MainBot extends TelegramLongPollingBot {
         }
     }
 
-    public void sendMessageWithKeyboard(Long chatId, String message, ReplyKeyboard replyKeyboard) {
+    public void sendMessage(Long chatId, String caption, File path) {
+        try {
+            execute(SendPhoto.builder().chatId(chatId).photo(new InputFile(path)).caption(caption).build());
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void sendMessage(Long chatId, String message, ReplyKeyboard replyKeyboard) {
         try {
             execute(SendMessage.builder().chatId(chatId).replyMarkup(replyKeyboard).text(message).build());
         } catch (TelegramApiException e) {
