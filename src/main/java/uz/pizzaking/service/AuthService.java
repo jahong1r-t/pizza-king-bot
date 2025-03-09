@@ -5,9 +5,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import uz.pizzaking.bot.MainBot;
+import uz.pizzaking.entity.User;
 import uz.pizzaking.entity.enums.Languages;
 import uz.pizzaking.entity.enums.States;
-import uz.pizzaking.entity.User;
 import uz.pizzaking.utils.Buttons;
 
 import java.util.ArrayList;
@@ -28,37 +28,35 @@ public class AuthService {
         Long chatId = update.getMessage().getChatId();
         String text = update.hasMessage() ? update.getMessage().getText() : "";
 
-        if (isRegister(chatId)) {
-            if (Objects.equals(chatId, ADMIN)) {
-                new AdminService(bot).service(update);
-            } else {
-                new UserService(bot).service(update);
-            }
+        if (Objects.equals(chatId, ADMIN)) {
+            new AdminService(bot).service(update);
+        } else if (isRegister(chatId) && !Objects.equals(chatId, ADMIN)) {
+            new UserService(bot).service(update);
         } else {
             States currentState = state.getOrDefault(chatId, States.LANGUAGE_SELECTION);
-
             switch (currentState) {
                 case LANGUAGE_SELECTION -> {
                     switch (text) {
                         case "/start" -> {
-                            bot.sendMessage(chatId, "🍕 Ready to savor Pizza King? First, choose your language!", keyboard(languages));
+                            bot.sendMessage(chatId, "Welcome to Pizza King. Please select the desired language.", keyboard(languages));
+                            state.put(chatId, States.LANGUAGE_SELECTION);
                         }
                         case Buttons.UZ -> {
-                            User user = new User();
+                            User user = new User(chatId, null, null, null, null, null);
                             user.setLanguage(Languages.UZ);
                             users.put(chatId, user);
                             bot.sendMessage(chatId, "Iltimos, telefon raqamingizni yuboring:", createPhoneButton(langToMessage(Languages.UZ)));
                             state.put(chatId, States.PHONE_NUMBER_REQUEST);
                         }
                         case Buttons.EN -> {
-                            User user = new User();
+                            User user = new User(chatId, null, null, null, null, null);
                             user.setLanguage(Languages.EN);
                             users.put(chatId, user);
                             bot.sendMessage(chatId, "Please share your phone number:", createPhoneButton(langToMessage(Languages.EN)));
                             state.put(chatId, States.PHONE_NUMBER_REQUEST);
                         }
                         case Buttons.RU -> {
-                            User user = new User();
+                            User user = new User(chatId, null, null, null, null, null);
                             user.setLanguage(Languages.RU);
                             users.put(chatId, user);
                             bot.sendMessage(chatId, "Пожалуйста, отправьте ваш номер телефона:", createPhoneButton(langToMessage(Languages.RU)));
@@ -67,19 +65,11 @@ public class AuthService {
                         default -> bot.sendMessage(chatId, "Please select a language from the options.");
                     }
                 }
-
                 case PHONE_NUMBER_REQUEST -> {
                     if (update.getMessage().hasContact()) {
-
-                        var from = update.getMessage().getFrom();
-
                         String phoneNumber = update.getMessage().getContact().getPhoneNumber();
                         User user = users.get(chatId);
-                        user.setPhoneNumber(phoneNumber);
-                        user.setName(from.getFirstName());
-                        user.setSurname(from.getLastName());
-                        user.setUsername(from.getUserName());
-
+                        user.setPhoneNumber(phoneNumber.startsWith("+") ? phoneNumber : "+" + phoneNumber);
                         Languages lang = user.getLanguage();
 
                         String successMessage = switch (lang) {
@@ -88,13 +78,25 @@ public class AuthService {
                             case RU -> "Регистрация успешно завершена!";
                         };
                         bot.sendMessage(chatId, successMessage, keyboard(lang == Languages.UZ ? main_uz : lang == Languages.EN ? main_en : main_ru));
-                        state.put(chatId, States.MAIN_MENU);
+                        state.remove(chatId);
+                    } else {
+                        User user = users.get(chatId);
+                        Languages lang = user.getLanguage();
+                        String errorMessage = switch (lang) {
+                            case UZ -> "Iltimos, telefon raqamingizni tugma orqali yuboring!";
+                            case EN -> "Please share your phone number using the button!";
+                            case RU -> "Пожалуйста, отправьте номер телефона через кнопку!";
+                        };
+                        bot.sendMessage(chatId, errorMessage);
                     }
+                }
+                case COMPLETED -> {
+                    new UserService(bot).service(update);
                 }
             }
         }
-    }
 
+    }
 
     private boolean isRegister(Long chatId) {
         User user = users.get(chatId);

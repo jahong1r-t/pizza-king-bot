@@ -2,7 +2,8 @@ package uz.pizzaking.service;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 import uz.pizzaking.bot.MainBot;
-import uz.pizzaking.utils.Util;
+import uz.pizzaking.entity.enums.States;
+import uz.pizzaking.utils.Buttons;
 
 import static uz.pizzaking.db.Datasource.*;
 
@@ -17,10 +18,26 @@ public class AdminService {
         String text = update.getMessage().getText();
         Long chatId = update.getMessage().getChatId();
 
+        States currentState = state.getOrDefault(chatId, States.MAIN_MENU);
 
-        switch (text) {
-            case "/start" -> {
-                bot.sendMessage(chatId, "Assalomu alaykum", keyboard(Util.main_admin_uz));
+        if (update.hasMessage()) {
+            switch (currentState) {
+                case MAIN_ADMIN -> {
+                    switch (text) {
+                        case Buttons.USERS_UZ -> {
+
+                        }
+                        case Buttons.STATISTICS_UZ -> {
+
+                        }
+                        case Buttons.MESSAGE_FOR_ALL_UZ -> {
+
+                        }
+                        case Buttons.SETTINGS_ADMIN_UZ -> {
+
+                        }
+                    }
+                }
             }
         }
     }
