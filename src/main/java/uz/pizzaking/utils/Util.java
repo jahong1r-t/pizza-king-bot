@@ -207,4 +207,5 @@ public interface Util {
             {FRIES_PLAIN_RU, FRIES_CHEESE_RU},
             {BACK_RU}
     };
+
 }

@@ -19,8 +19,10 @@ public class Datasource {
     public static Map<Long, User> users = new HashMap<>();
 
     static {
-        users.put(ADMIN, new User(ADMIN, "turayev_j", "998975881554", "Jahongir", null, Languages.RU));
+        users.put(ADMIN, new User(ADMIN, "turayev_j", "998975881554", "Jahongir", null, Languages.UZBEK));
     }
+
+    public static Languages adminLanguage = users.get(ADMIN).getLanguage();
 
     public static ReplyKeyboardMarkup keyboard(String[][] buttons) {
         List<KeyboardRow> rows = new ArrayList<>();
