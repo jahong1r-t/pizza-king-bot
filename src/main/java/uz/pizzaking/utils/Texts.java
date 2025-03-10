@@ -19,6 +19,10 @@ public interface Texts {
     String welcome_en = "Welcome back! \uD83C\uDF55 Pizza King awaits — what’s your order?";
     String welcome_ru = "С возвращением! \uD83C\uDF55 Pizza King ждёт — что закажете?";
 
+    String welcome_admin_uz = "\uD83D\uDC4B Xush kelibsiz, hurmatli admin!";
+    String welcome_admin_en = "\uD83D\uDC4B Welcome, dear admin!";
+    String welcome_admin_ru = "\uD83D\uDC4B Добро пожаловать, уважаемый администратор!";
+
     String user_error_uz = "Noto‘g‘ri buyruq! Iltimos, menyudan tanlang.";
     String user_error_en = "Invalid command! Please choose from the menu.";
     String user_error_ru = "Неверная команда! Выберите из меню.";
