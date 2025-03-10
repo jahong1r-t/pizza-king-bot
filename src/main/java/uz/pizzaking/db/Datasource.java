@@ -17,7 +17,6 @@ public class Datasource {
 
     public static Map<Long, User> users = new HashMap<>();
 
-
     public static ReplyKeyboardMarkup keyboard(String[][] buttons) {
         List<KeyboardRow> rows = new ArrayList<>();
 

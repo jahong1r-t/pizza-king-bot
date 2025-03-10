@@ -7,5 +7,7 @@ public enum States {
     MAIN_MENU,
     MAIN_ADMIN,
     WAIT_MESSAGE,
-
+    PRODUCT_MENU,
+    PRODUCT_SUB_MENU,
+    ORDER_CONFIRMATION
 }
