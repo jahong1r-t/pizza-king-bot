@@ -45,6 +45,14 @@ public class MainBot extends TelegramLongPollingBot {
         }
     }
 
+    public void sendMessage(Long chatId, String caption, File path, ReplyKeyboard replyKeyboard) {
+        try {
+            execute(SendPhoto.builder().chatId(chatId).photo(new InputFile(path)).caption(caption).replyMarkup(replyKeyboard).build());
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void sendPhoto(Long chatId, String path, String caption) {
         try {
             execute(SendPhoto.builder().chatId(chatId).photo(new InputFile(new File(path))).caption(caption).build());
