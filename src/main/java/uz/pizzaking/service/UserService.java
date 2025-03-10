@@ -1,5 +1,6 @@
 package uz.pizzaking.service;
 
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -8,18 +9,15 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import uz.pizzaking.bot.MainBot;
 import uz.pizzaking.entity.enums.Languages;
 import uz.pizzaking.entity.enums.States;
-import uz.pizzaking.utils.Buttons;
-import uz.pizzaking.utils.Texts;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import static uz.pizzaking.db.Datasource.*;
-import static uz.pizzaking.entity.enums.Languages.EN;
-import static uz.pizzaking.entity.enums.Languages.UZ;
+import static uz.pizzaking.entity.enums.Languages.*;
 import static uz.pizzaking.utils.Buttons.*;
-import static uz.pizzaking.utils.Util.*;
+import static uz.pizzaking.utils.Messages.*;
 
 public class UserService {
     private final MainBot bot;
@@ -34,259 +32,116 @@ public class UserService {
         User from = update.getMessage().getFrom();
         Languages lang = users.get(chatId).getLanguage();
 
+        System.err.println(update.hasCallbackQuery() ? update.getCallbackQuery().getData() : "no data user");
+
         if (update.hasMessage()) {
             state.putIfAbsent(chatId, States.MAIN_MENU);
             States currentState = state.get(chatId);
 
             if (currentState == States.MAIN_MENU) {
                 switch (text) {
-                    case "/start" ->
-                            bot.sendMessage(chatId, lang == UZ ? Texts.welcome_uz : lang == Languages.EN ? Texts.welcome_en : Texts.welcome_ru, keyboard(lang == UZ ? main_uz : lang == Languages.EN ? main_en : main_ru));
-
-                    case Buttons.MENU_UZ -> {
+                    case "/start" -> bot.sendMessage(chatId, welcome_msg(lang), main_keyboard(lang));
+                    case MENU_UZ, MENU_EN, MENU_RU -> {
+                        bot.sendMessage(chatId, select_msg(lang), product_menu(lang));
                         state.put(chatId, States.PRODUCT_MENU);
-                        bot.sendMessage(chatId, "Tanlang:", keyboard(product_uz));
                     }
-                    case Buttons.MENU_EN -> {
-                        state.put(chatId, States.PRODUCT_MENU);
-                        bot.sendMessage(chatId, "Select:", keyboard(product_en));
-                    }
-                    case Buttons.MENU_RU -> {
-                        state.put(chatId, States.PRODUCT_MENU);
-                        bot.sendMessage(chatId, "Выбирать:", keyboard(product_ru));
-                    }
-                    case Buttons.ABOUT_UZ -> bot.sendMessage(chatId, Texts.about_uz, Texts.logo_path);
-                    case Buttons.ABOUT_EN -> bot.sendMessage(chatId, Texts.about_en, Texts.logo_path);
-                    case Buttons.ABOUT_RU -> bot.sendMessage(chatId, Texts.about_ru, Texts.logo_path);
-                    case Buttons.CALL_UZ -> bot.sendMessage(chatId, Texts.call_uz, Texts.call_path);
-                    case Buttons.CALL_EN -> bot.sendMessage(chatId, Texts.call_en, Texts.call_path);
-                    case Buttons.CALL_RU -> bot.sendMessage(chatId, Texts.call_ru, Texts.call_path);
-                    case Buttons.SEND_MESSAGE_UZ -> {
-                        bot.sendMessage(chatId, Texts.send_msg_uz);
+                    case ABOUT_UZ, ABOUT_EN, ABOUT_RU -> bot.sendMessage(chatId, about_msg(lang), logo_path);
+                    case CALL_UZ, CALL_EN, CALL_RU -> bot.sendMessage(chatId, call_num_msg(lang), call_path);
+                    case SEND_MESSAGE_UZ, SEND_MESSAGE_EN, SEND_MESSAGE_RU -> {
+                        bot.sendMessage(chatId, send_msg(lang));
                         state.put(chatId, States.WAIT_MESSAGE);
                     }
-                    case Buttons.SEND_MESSAGE_EN -> {
-                        bot.sendMessage(chatId, Texts.send_msg_en);
-                        state.put(chatId, States.WAIT_MESSAGE);
-                    }
-                    case Buttons.SEND_MESSAGE_RU -> {
-                        bot.sendMessage(chatId, Texts.send_msg_ru);
-                        state.put(chatId, States.WAIT_MESSAGE);
-                    }
-                    default -> {
-                        bot.sendMessage(chatId, lang == UZ ? Texts.user_error_uz : lang == Languages.EN ? Texts.user_error_en : Texts.user_error_ru);
-                    }
+                    default -> bot.sendMessage(chatId, error_msg(lang));
                 }
             } else if (currentState == States.PRODUCT_MENU) {
-                final String message = lang == UZ ? "Tanlang:" : lang == EN ? "Select:" : "Выбирать:";
                 switch (text) {
-                    case Buttons.PIZZA_UZ -> {
-                        bot.sendMessage(chatId, message, keyboard(pizza_sub_uz));
+                    case PIZZA_UZ, PIZZA_RU, PIZZA_EN -> {
+                        bot.sendMessage(chatId, select_msg(lang), pizza_sub_menu(lang));
                         state.put(chatId, States.PRODUCT_SUB_MENU);
                     }
-                    case Buttons.HOTDOG_UZ -> {
-                        bot.sendMessage(chatId, message, keyboard(lang == UZ ? hotdog_sub_uz : hotdog_sub_en));
+                    case HOTDOG_UZ, HOTDOG_RU -> {
+                        bot.sendMessage(chatId, select_msg(lang), hotdog_sub_menu(lang));
                         state.put(chatId, States.PRODUCT_SUB_MENU);
                     }
-                    case Buttons.BURGER_UZ -> {
-                        bot.sendMessage(chatId, message, keyboard(burger_sub_uz));
+                    case LAVASH_UZ, LAVASH_RU -> {
+                        bot.sendMessage(chatId, select_msg(lang), lavash_sub_menu(lang));
                         state.put(chatId, States.PRODUCT_SUB_MENU);
                     }
-                    case Buttons.SANDWICH_UZ -> {
-                        bot.sendMessage(chatId, message, keyboard(sandwich_sub_uz));
+                    case BURGER_UZ, BURGER_EN, BURGER_RU -> {
+                        bot.sendMessage(chatId, select_msg(lang), burger_sub_menu(lang));
                         state.put(chatId, States.PRODUCT_SUB_MENU);
                     }
-                    case DRINKS_UZ -> {
-                        bot.sendMessage(chatId, message, keyboard(drinks_sub_uz));
+                    case SANDWICH_UZ, SANDWICH_EN, SANDWICH_RU -> {
+                        bot.sendMessage(chatId, select_msg(lang), sandwich_sub_menu(lang));
                         state.put(chatId, States.PRODUCT_SUB_MENU);
                     }
-                    case DESSERT_UZ -> {
-                        bot.sendMessage(chatId, message, keyboard(dessert_sub_uz));
+                    case DRINKS_UZ, DRINKS_EN, DRINKS_RU -> {
+                        bot.sendMessage(chatId, select_msg(lang), drinks_sub_menu(lang));
                         state.put(chatId, States.PRODUCT_SUB_MENU);
                     }
-                    case FRIES_UZ -> {
-                        bot.sendMessage(chatId, message, keyboard(fries_sub_uz));
+                    case DESSERT_UZ, DESSERT_EN, DESSERT_RU -> {
+                        bot.sendMessage(chatId, select_msg(lang), dessert_sub_menu(lang));
                         state.put(chatId, States.PRODUCT_SUB_MENU);
                     }
-                    case Buttons.PIZZA_EN -> {
-                        bot.sendMessage(chatId, message, keyboard(pizza_sub_en));
-                        state.put(chatId, States.PRODUCT_SUB_MENU);
-                    }
-                    case Buttons.DESSERT_EN -> {
-                        bot.sendMessage(chatId, message, keyboard(dessert_sub_en));
-                        state.put(chatId, States.PRODUCT_SUB_MENU);
-                    }
-                    case Buttons.LAVASH_EN -> {
-                        bot.sendMessage(chatId, message, keyboard(lang == UZ ? lavash_sub_uz : lavash_sub_en));
-                        state.put(chatId, States.PRODUCT_SUB_MENU);
-                    }
-                    case Buttons.BURGER_EN -> {
-                        bot.sendMessage(chatId, message, keyboard(burger_sub_en));
-                        state.put(chatId, States.PRODUCT_SUB_MENU);
-                    }
-                    case Buttons.SANDWICH_EN -> {
-                        bot.sendMessage(chatId, message, keyboard(sandwich_sub_en));
-                        state.put(chatId, States.PRODUCT_SUB_MENU);
-                    }
-                    case Buttons.DRINKS_EN -> {
-                        bot.sendMessage(chatId, message, keyboard(drinks_sub_en));
-                        state.put(chatId, States.PRODUCT_SUB_MENU);
-                    }
-                    case FRIES_EN -> {
-                        bot.sendMessage(chatId, message, keyboard(fries_sub_en));
-                        state.put(chatId, States.PRODUCT_SUB_MENU);
-                    }
-                    case Buttons.PIZZA_RU -> {
-                        bot.sendMessage(chatId, message, keyboard(pizza_sub_ru));
-                        state.put(chatId, States.PRODUCT_SUB_MENU);
-                    }
-                    case Buttons.HOTDOG_RU -> {
-                        bot.sendMessage(chatId, message, keyboard(hotdog_sub_ru));
-                        state.put(chatId, States.PRODUCT_SUB_MENU);
-                    }
-                    case Buttons.LAVASH_RU -> {
-                        bot.sendMessage(chatId, message, keyboard(lavash_sub_ru));
-                        state.put(chatId, States.PRODUCT_SUB_MENU);
-                    }
-
-                    case Buttons.BURGER_RU -> {
-                        bot.sendMessage(chatId, message, keyboard(burger_sub_ru));
-                        state.put(chatId, States.PRODUCT_SUB_MENU);
-                    }
-                    case Buttons.SANDWICH_RU -> {
-                        bot.sendMessage(chatId, message, keyboard(sandwich_sub_ru));
-                        state.put(chatId, States.PRODUCT_SUB_MENU);
-                    }
-                    case DESSERT_RU -> {
-                        bot.sendMessage(chatId, message, keyboard(dessert_sub_ru));
-                        state.put(chatId, States.PRODUCT_SUB_MENU);
-                    }
-                    case FRIES_RU -> {
-                        bot.sendMessage(chatId, message, keyboard(fries_sub_ru));
-                        state.put(chatId, States.PRODUCT_SUB_MENU);
-                    }
-
-                    case DRINKS_RU -> {
-                        bot.sendMessage(chatId, message, keyboard(drinks_sub_ru));
+                    case FRIES_UZ, FRIES_EN, FRIES_RU -> {
+                        bot.sendMessage(chatId, select_msg(lang), fries_sub_menu(lang));
                         state.put(chatId, States.PRODUCT_SUB_MENU);
                     }
                     case BACK_UZ, BACK_RU, BACK_EN -> {
+                        bot.sendMessage(chatId, welcome_msg(lang), main_keyboard(lang));
                         state.put(chatId, States.MAIN_MENU);
-                        bot.sendMessage(chatId, lang == UZ ? Texts.welcome_uz : lang == Languages.RU ? Texts.welcome_ru : Texts.welcome_en, keyboard(lang == UZ ? main_uz : lang == Languages.EN ? main_en : main_ru));
                     }
                 }
             } else if (currentState == States.PRODUCT_SUB_MENU) {
-
                 switch (text) {
-                    case Buttons.PIZZA_CLASSIC_UZ, Buttons.PIZZA_CLASSIC_EN, Buttons.PIZZA_CLASSIC_RU -> {
-                        String message = lang == Languages.UZ ? "🍕 Klassik pitsa\nNarxi: 90 000 so'm" : lang == Languages.EN ? "🍕 Classic pizza\nPrice: 90 000 sum" : "🍕 Классическая пицца\nЦена: 90 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/pizza_classic.jpg"), productInlineButton(chatId, lang));
-                    }
-                    case Buttons.PIZZA_PEPPERONI_UZ, Buttons.PIZZA_PEPPERONI_EN, Buttons.PIZZA_PEPPERONI_RU -> {
-                        String message = lang == Languages.UZ ? "🍕 Pepperonie pitsa\nNarxi: 120 000 so'm" : lang == Languages.EN ? "🍕 Pepperoni pizza\nPrice: 120 000 sum" : "🍕 Пицца Пепперони\nЦена: 120 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/pizza_pepperoni.jpg"), productInlineButton(chatId, lang));
-                    }
-                    case Buttons.PIZZA_MARGHERITA_UZ, Buttons.PIZZA_MARGHERITA_RU -> {
-                        String message = lang == Languages.UZ ? "🍕 Margherita pitsa\nNarxi: 110 000 so'm" : lang == Languages.EN ? "🍕 Margherita pizza\nPrice: 110 000 sum" : "🍕 Пицца Маргарита\nЦена: 110 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/pizza_cheese.jpg"), productInlineButton(chatId, lang)); // Margherita uchun pizza_cheese.jpg ishlatildi
-                    }
-
-                    case Buttons.BURGER_CHEESE_UZ, Buttons.BURGER_CHEESE_EN, Buttons.BURGER_CHEESE_RU -> {
-                        String message = lang == Languages.UZ ? "🍔 Klassik gamburger\nNarxi: 60 000 so'm" : lang == Languages.EN ? "🍔 Cheeseburger\nPrice: 60 000 sum" : "🍔 Чизбургер\nЦена: 60 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/burger_classic.jpg"), productInlineButton(chatId, lang)); // Pishloqli uchun burger_classic.jpg
-                    }
-                    case Buttons.BURGER_CHICKEN_UZ, Buttons.BURGER_CHICKEN_EN, Buttons.BURGER_CHICKEN_RU -> {
-                        String message = lang == Languages.UZ ? "🍔 Tovuqli gamburger\nNarxi: 55 000 so'm" : lang == Languages.EN ? "🍔 Chicken Burger\nPrice: 55 000 sum" : "🍔 Куриный бургер\nЦена: 55 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/burger_chicken.jpg"), productInlineButton(chatId, lang));
-                    }
-                    case Buttons.BURGER_DOUBLE_UZ, Buttons.BURGER_DOUBLE_EN, Buttons.BURGER_DOUBLE_RU -> {
-                        String message = lang == Languages.UZ ? "🍔 Ikki qavatli gamburger\nNarxi: 80 000 so'm" : lang == Languages.EN ? "🍔 Double Burger\nPrice: 80 000 sum" : "🍔 Двойной бургер\nЦена: 80 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/burger_double.jpg"), productInlineButton(chatId, lang));
-                    }
-
-                    // Hotdog turlari
-                    case Buttons.HOTDOG_CLASSIC_UZ, Buttons.HOTDOG_CLASSIC_EN, Buttons.HOTDOG_CLASSIC_RU -> {
-                        String message = lang == Languages.UZ ? "🌭 Klassik hotdog\nNarxi: 30 000 so'm" : lang == Languages.EN ? "🌭 Classic hotdog\nPrice: 30 000 sum" : "🌭 Классический хот-дог\nЦена: 30 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/hotdog_classic.jpg"), productInlineButton(chatId, lang));
-                    }
-                    case Buttons.HOTDOG_CHILI_UZ, Buttons.HOTDOG_CHILI_EN, Buttons.HOTDOG_CHILI_RU -> {
-                        String message = lang == Languages.UZ ? "🌭 Chili hotdog\nNarxi: 35 000 so'm" : lang == Languages.EN ? "🌭 Chili Dog\nPrice: 35 000 sum" : "🌭 Чили дог\nЦена: 35 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/hotdog_chili.jpg"), productInlineButton(chatId, lang));
-                    }
-                    case Buttons.HOTDOG_CHEESE_UZ, Buttons.HOTDOG_CHEESE_EN, Buttons.HOTDOG_CHEESE_RU -> {
-                        String message = lang == Languages.UZ ? "🌭 Pishloqli hotdog\nNarxi: 40 000 so'm" : lang == Languages.EN ? "🌭 Cheese Dog\nPrice: 40 000 sum" : "🌭 Сырный дог\nЦена: 40 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/hotdog_cheese.jpg"), productInlineButton(chatId, lang));
-                    }
-
-                    // Lavash turlari
-                    case Buttons.LAVASH_MEAT_UZ, Buttons.LAVASH_MEAT_EN, Buttons.LAVASH_MEAT_RU -> {
-                        String message = lang == Languages.UZ ? "🥙 Go‘shtli lavash\nNarxi: 45 000 so'm" : lang == Languages.EN ? "🥙 Meat Lavash\nPrice: 45 000 sum" : "🥙 Мясной лаваш\nЦена: 45 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/lavash_meat.jpg"), productInlineButton(chatId, lang));
-                    }
-                    case Buttons.LAVASH_CHICKEN_UZ, Buttons.LAVASH_CHICKEN_EN, Buttons.LAVASH_CHICKEN_RU -> {
-                        String message = lang == Languages.UZ ? "🥙 Tovuqli lavash\nNarxi: 40 000 so'm" : lang == Languages.EN ? "🥙 Chicken Lavash\nPrice: 40 000 sum" : "🥙 Куриный лаваш\nЦена: 40 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/lavash_chicken.jpg"), productInlineButton(chatId, lang));
-                    }
-                    case Buttons.LAVASH_CHEESE_UZ, Buttons.LAVASH_CHEESE_EN, Buttons.LAVASH_CHEESE_RU -> {
-                        String message = lang == Languages.UZ ? "🥙 Pishloqli lavash\nNarxi: 42 000 so'm" : lang == Languages.EN ? "🥙 Cheese Lavash\nPrice: 42 000 sum" : "🥙 Сырный лаваш\nЦена: 42 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/lavash_cheese.jpg"), productInlineButton(chatId, lang));
-                    }
-
-                    // Sandwich turlari
-                    case Buttons.SANDWICH_CLUB_UZ, Buttons.SANDWICH_CLUB_EN, Buttons.SANDWICH_CLUB_RU -> {
-                        String message = lang == Languages.UZ ? "🥪 Klub sendvichi\nNarxi: 50 000 so'm" : lang == Languages.EN ? "🥪 Club Sandwich\nPrice: 50 000 sum" : "🥪 Клубный сэндвич\nЦена: 50 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/sandwich_classic.jpg"), productInlineButton(chatId, lang));
-                    }
-                    case Buttons.SANDWICH_VEGGIE_UZ, Buttons.SANDWICH_VEGGIE_EN, Buttons.SANDWICH_VEGGIE_RU -> {
-                        String message = lang == Languages.UZ ? "🥪 Pishloqli sendvich\nNarxi: 45 000 so'm" : lang == Languages.EN ? "🥪 Veggie Sandwich\nPrice: 45 000 sum" : "🥪 Овощной сэндвич\nЦена: 45 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/sandwich_cheese.jpg"), productInlineButton(chatId, lang));
-                    }
-
-                    // Fries turlari
-                    case Buttons.FRIES_PLAIN_UZ, Buttons.FRIES_PLAIN_EN, Buttons.FRIES_PLAIN_RU -> {
-                        String message = lang == Languages.UZ ? "🍟 Oddiy kartoshka fri\nNarxi: 20 000 so'm" : lang == Languages.EN ? "🍟 Plain fries\nPrice: 20 000 sum" : "🍟 Обычная картошка фри\nЦена: 20 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/fri_classic.jpg"), productInlineButton(chatId, lang));
-                    }
-                    case Buttons.FRIES_CHEESE_UZ, Buttons.FRIES_CHEESE_EN, Buttons.FRIES_CHEESE_RU -> {
-                        String message = lang == Languages.UZ ? "🍟 Pishloqli kartoshka fri\nNarxi: 25 000 so'm" : lang == Languages.EN ? "🍟 Cheesy fries\nPrice: 25 000 sum" : "🍟 Картошка фри с сырным соусом\nЦена: 25 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/fri_cheese.jpg"), productInlineButton(chatId, lang));
-                    }
-
-                    // Dessert turlari
-                    case Buttons.DESSERT_CHEESECAKE_UZ, Buttons.DESSERT_CHEESECAKE_RU -> {
-                        String message = lang == Languages.UZ ? "🍮 Cheesecake\nNarxi: 35 000 so'm" : lang == Languages.EN ? "🍮 Cheesecake\nPrice: 35 000 sum" : "🍮 Чизкейк\nЦена: 35 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/cake_cheesecake.jpg"), productInlineButton(chatId, lang));
-                    }
-                    case Buttons.DESSERT_MEDOVIK_UZ, Buttons.DESSERT_MEDOVIK_RU -> {
-                        String message = lang == Languages.UZ ? "🍮 Medovik\nNarxi: 30 000 so'm" : lang == Languages.EN ? "🍮 Medovik\nPrice: 30 000 sum" : "🍮 Медовик\nЦена: 30 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/cace_medovik.jpg"), productInlineButton(chatId, lang));
-                    }
-                    case Buttons.DESSERT_NAPALEON_UZ, Buttons.DESSERT_NAPALEON_EN, Buttons.DESSERT_NAPALEON_RU -> {
-                        String message = lang == Languages.UZ ? "🍮 Napaleon\nNarxi: 32 000 so'm" : lang == Languages.EN ? "🍮 Napoleon\nPrice: 32 000 sum" : "🍮 Наполеон\nЦена: 32 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/cace_napaleon.jpg"), productInlineButton(chatId, lang));
-                    }
-
-                    case Buttons.DRINKS_COLA_UZ, Buttons.DRINKS_COLA_RU -> {
-                        String message = lang == Languages.UZ ? "🥤 Cola\nNarxi: 10 000 so'm" : lang == Languages.EN ? "🥤 Cola\nPrice: 10 000 sum" : "🥤 Кола\nЦена: 10 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/drink_cola.jpg"), productInlineButton(chatId, lang));
-                    }
-                    case Buttons.DRINKS_SPRITE_UZ, Buttons.DRINKS_SPRITE_RU -> {
-                        String message = lang == Languages.UZ ? "🥤 Sprite\nNarxi: 10 000 so'm" : lang == Languages.EN ? "🥤 Sprite\nPrice: 10 000 sum" : "🥤 Спрайт\nЦена: 10 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/drink_sprite.jpg"), productInlineButton(chatId, lang));
-                    }
-                    case Buttons.DRINKS_TEA_UZ, Buttons.DRINKS_TEA_EN, Buttons.DRINKS_TEA_RU -> {
-                        String message = lang == Languages.UZ ? "🍵 Choy\nNarxi: 8 000 so'm" : lang == Languages.EN ? "🍵 Tea\nPrice: 8 000 sum" : "🍵 Чай\nЦена: 8 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/drink_tea.jpg"), productInlineButton(chatId, lang));
-                    }
-                    case Buttons.DRINKS_COFFEE_UZ, Buttons.DRINKS_COFFEE_EN, Buttons.DRINKS_COFFEE_RU -> {
-                        String message = lang == Languages.UZ ? "☕ Kofe\nNarxi: 12 000 so'm" : lang == Languages.EN ? "☕ Coffee\nPrice: 12 000 sum" : "☕ Кофе\nЦена: 12 000 сум.";
-                        bot.sendMessage(chatId, message, new File("src/main/resources/drink_coffe.jpg"), productInlineButton(chatId, lang));
-                    }
-
-                    // Orqaga tugmasi
+                    case PIZZA_CLASSIC_UZ, PIZZA_CLASSIC_EN, PIZZA_CLASSIC_RU ->
+                            bot.sendMessage(chatId, pizza_classic_details(lang), new File("src/main/resources/pizza_classic.jpg"), productInlineButton(chatId, lang));
+                    case PIZZA_PEPPERONI_UZ, PIZZA_PEPPERONI_EN, PIZZA_PEPPERONI_RU ->
+                            bot.sendMessage(chatId, pizza_pepperoni_details(lang), new File("src/main/resources/pizza_pepperoni.jpg"), productInlineButton(chatId, lang));
+                    case PIZZA_MARGHERITA_UZ, PIZZA_MARGHERITA_RU ->
+                            bot.sendMessage(chatId, pizza_margherita_details(lang), new File("src/main/resources/pizza_cheese.jpg"), productInlineButton(chatId, lang));
+                    case BURGER_CHEESE_UZ, BURGER_CHEESE_EN, BURGER_CHEESE_RU ->
+                            bot.sendMessage(chatId, burger_cheese_details(lang), new File("src/main/resources/burger_classic.jpg"), productInlineButton(chatId, lang));
+                    case BURGER_CHICKEN_UZ, BURGER_CHICKEN_EN, BURGER_CHICKEN_RU ->
+                            bot.sendMessage(chatId, burger_chicken_details(lang), new File("src/main/resources/burger_chicken.jpg"), productInlineButton(chatId, lang));
+                    case BURGER_DOUBLE_UZ, BURGER_DOUBLE_EN, BURGER_DOUBLE_RU ->
+                            bot.sendMessage(chatId, burger_double_details(lang), new File("src/main/resources/burger_double.jpg"), productInlineButton(chatId, lang));
+                    case HOTDOG_CLASSIC_UZ, HOTDOG_CLASSIC_EN, HOTDOG_CLASSIC_RU ->
+                            bot.sendMessage(chatId, hotdog_classic_details(lang), new File("src/main/resources/hotdog_classic.jpg"), productInlineButton(chatId, lang));
+                    case HOTDOG_CHILI_UZ, HOTDOG_CHILI_EN, HOTDOG_CHILI_RU ->
+                            bot.sendMessage(chatId, hotdog_chili_details(lang), new File("src/main/resources/hotdog_chili.jpg"), productInlineButton(chatId, lang));
+                    case HOTDOG_CHEESE_UZ, HOTDOG_CHEESE_EN, HOTDOG_CHEESE_RU ->
+                            bot.sendMessage(chatId, hotdog_cheese_details(lang), new File("src/main/resources/hotdog_cheese.jpg"), productInlineButton(chatId, lang));
+                    case LAVASH_MEAT_UZ, LAVASH_MEAT_EN, LAVASH_MEAT_RU ->
+                            bot.sendMessage(chatId, lavash_meat_details(lang), new File("src/main/resources/lavash_meat.jpg"), productInlineButton(chatId, lang));
+                    case LAVASH_CHICKEN_UZ, LAVASH_CHICKEN_EN, LAVASH_CHICKEN_RU ->
+                            bot.sendMessage(chatId, lavash_chicken_details(lang), new File("src/main/resources/lavash_chicken.jpg"), productInlineButton(chatId, lang));
+                    case LAVASH_CHEESE_UZ, LAVASH_CHEESE_EN, LAVASH_CHEESE_RU ->
+                            bot.sendMessage(chatId, lavash_cheese_details(lang), new File("src/main/resources/lavash_cheese.jpg"), productInlineButton(chatId, lang));
+                    case SANDWICH_CLUB_UZ, SANDWICH_CLUB_EN, SANDWICH_CLUB_RU ->
+                            bot.sendMessage(chatId, sandwich_club_details(lang), new File("src/main/resources/sandwich_classic.jpg"), productInlineButton(chatId, lang));
+                    case SANDWICH_VEGGIE_UZ, SANDWICH_VEGGIE_EN, SANDWICH_VEGGIE_RU ->
+                            bot.sendMessage(chatId, sandwich_veggie_details(lang), new File("src/main/resources/sandwich_cheese.jpg"), productInlineButton(chatId, lang));
+                    case FRIES_PLAIN_UZ, FRIES_PLAIN_EN, FRIES_PLAIN_RU ->
+                            bot.sendMessage(chatId, fries_plain_details(lang), new File("src/main/resources/fri_classic.jpg"), productInlineButton(chatId, lang));
+                    case FRIES_CHEESE_UZ, FRIES_CHEESE_EN, FRIES_CHEESE_RU ->
+                            bot.sendMessage(chatId, fries_cheese_details(lang), new File("src/main/resources/fri_cheese.jpg"), productInlineButton(chatId, lang));
+                    case DESSERT_CHEESECAKE_UZ, DESSERT_CHEESECAKE_RU ->
+                            bot.sendMessage(chatId, dessert_cheesecake_details(lang), new File("src/main/resources/cake_cheesecake.jpg"), productInlineButton(chatId, lang));
+                    case DESSERT_MEDOVIK_UZ, DESSERT_MEDOVIK_RU ->
+                            bot.sendMessage(chatId, dessert_medovik_details(lang), new File("src/main/resources/cace_medovik.jpg"), productInlineButton(chatId, lang));
+                    case DESSERT_NAPALEON_UZ, DESSERT_NAPALEON_EN, DESSERT_NAPALEON_RU ->
+                            bot.sendMessage(chatId, dessert_napoleon_details(lang), new File("src/main/resources/cace_napaleon.jpg"), productInlineButton(chatId, lang));
+                    case DRINKS_COLA_UZ, DRINKS_COLA_RU ->
+                            bot.sendMessage(chatId, drinks_cola_details(lang), new File("src/main/resources/drink_cola.jpg"), productInlineButton(chatId, lang));
+                    case DRINKS_SPRITE_UZ, DRINKS_SPRITE_RU ->
+                            bot.sendMessage(chatId, drinks_sprite_details(lang), new File("src/main/resources/drink_sprite.jpg"), productInlineButton(chatId, lang));
+                    case DRINKS_TEA_UZ, DRINKS_TEA_EN, DRINKS_TEA_RU ->
+                            bot.sendMessage(chatId, drinks_tea_details(lang), new File("src/main/resources/drink_tea.jpg"), productInlineButton(chatId, lang));
+                    case DRINKS_COFFEE_UZ, DRINKS_COFFEE_EN, DRINKS_COFFEE_RU ->
+                            bot.sendMessage(chatId, drinks_coffee_details(lang), new File("src/main/resources/drink_coffe.jpg"), productInlineButton(chatId, lang));
                     case BACK_UZ, BACK_EN, BACK_RU -> {
-                        String backMessage = lang == Languages.UZ ? "Asosiy menyuga qaytdik!" : lang == Languages.EN ? "Back to main menu!" : "Вернулись в главное меню!";
-                        bot.sendMessage(chatId, backMessage, keyboard(lang == Languages.UZ ? product_uz : lang == Languages.EN ? product_en : product_ru));
+                        bot.sendMessage(chatId, back_msg(lang), product_menu(lang));
                         state.put(chatId, States.PRODUCT_MENU);
                     }
                 }
@@ -294,40 +149,21 @@ public class UserService {
                 String phoneNumber = users.get(chatId).getPhoneNumber();
                 Languages language = users.get(ADMIN).getLanguage();
 
-                String builder = language == Languages.UZ ? "📨 Yangi xabar keldi!\n"
-                        + "👤 Kimdan: @" + (from.getUserName() != null ? from.getUserName() : "Username yo‘q") + "\n"
-                        + "📝 Ism: " + from.getFirstName()
-                        + "\n📞 Raqam: " + phoneNumber
-                        + "\n💬 Xabar: " + text + "\n" :
-                        language == Languages.EN ? "📨 New message received!\n"
-                                + "👤 From: @" + (from.getUserName() != null ? from.getUserName() : "No username") + "\n"
-                                + "📝 Name: " + from.getFirstName()
-                                + "\n📞 Phone: " + phoneNumber
-                                + "\n💬 Message: " + text + "\n" :
-                                "📨 Пришло новое сообщение!\n"
-                                        + "👤 От кого: @" + (from.getUserName() != null ? from.getUserName() : "Нет имени пользователя") + "\n"
-                                        + "📝 Имя: " + from.getFirstName()
-                                        + "\n📞 Номер: " + phoneNumber
-                                        + "\n💬 Сообщение: " + text + "\n";
-
-                bot.sendMessage(ADMIN, builder, getInlineKeyboard(chatId, lang));
-                bot.sendMessage(chatId, lang == Languages.UZ ? Texts.res_message_uz : lang == Languages.EN ? Texts.res_message_en : Texts.res_message_ru);
+                bot.sendMessage(ADMIN, msg_to_admin(language, from, phoneNumber, text), getInlineKeyboard(chatId));
+                bot.sendMessage(chatId, res_message(lang));
                 state.remove(chatId);
             }
         }
     }
 
-
-    private ReplyKeyboard getInlineKeyboard(Long chatId, Languages lang) {
-        Languages language = users.get(ADMIN).getLanguage();
+    private ReplyKeyboard getInlineKeyboard(Long chatId) {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
-
 
         List<List<InlineKeyboardButton>> listButtons = new ArrayList<>();
 
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         InlineKeyboardButton button1 = new InlineKeyboardButton();
-        button1.setText(language == UZ ? "Javob berish" : language == EN ? "Reply" : "Отвечать");
+        button1.setText(adminLanguage == UZBEK ? "Javob berish" : adminLanguage == ENGLISH ? "Reply" : "Отвечать");
         button1.setCallbackData(chatId.toString());
         buttons.add(button1);
         listButtons.add(buttons);
@@ -338,7 +174,6 @@ public class UserService {
 
     private ReplyKeyboard productInlineButton(Long chatId, Languages lang) {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
-
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
         List<InlineKeyboardButton> firstRow = new ArrayList<>();
@@ -348,7 +183,7 @@ public class UserService {
         minusButton.setText("-");
         minusButton.setCallbackData(chatId.toString() + "minus");
         plusButton.setText("+");
-        plusButton.setCallbackData(chatId.toString() + "plus");
+        plusButton.setCallbackData(chatId + "plus");
 
         firstRow.add(minusButton);
         firstRow.add(plusButton);
@@ -357,8 +192,8 @@ public class UserService {
         List<InlineKeyboardButton> secondRow = new ArrayList<>();
         InlineKeyboardButton addToCartButton = new InlineKeyboardButton();
 
-        addToCartButton.setText(lang == Languages.UZ ? "Savatga qo'shish 🛒" : lang == Languages.EN ? "Add to cart 🛒" : "Добавить в корзину 🛒");
-        addToCartButton.setCallbackData(chatId.toString() + "add_to_cart");
+        addToCartButton.setText(to_cart(lang));
+        addToCartButton.setCallbackData(chatId + "add_to_cart");
 
         secondRow.add(addToCartButton);
         rows.add(secondRow);
@@ -366,5 +201,4 @@ public class UserService {
         markup.setKeyboard(rows);
         return markup;
     }
-
 }
