@@ -3,6 +3,7 @@ package uz.pizzaking.db;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import uz.pizzaking.entity.User;
+import uz.pizzaking.entity.enums.Languages;
 import uz.pizzaking.entity.enums.States;
 
 import java.util.ArrayList;
@@ -16,6 +17,10 @@ public class Datasource {
     public static Map<Long, States> state = new HashMap<>();
 
     public static Map<Long, User> users = new HashMap<>();
+
+    static {
+        users.put(ADMIN, new User(ADMIN, "turayev_j", "998975881554", "Jahongir", null, Languages.RU));
+    }
 
     public static ReplyKeyboardMarkup keyboard(String[][] buttons) {
         List<KeyboardRow> rows = new ArrayList<>();

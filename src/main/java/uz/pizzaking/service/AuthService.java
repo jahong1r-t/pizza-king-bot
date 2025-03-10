@@ -67,9 +67,13 @@ public class AuthService {
                 }
                 case PHONE_NUMBER_REQUEST -> {
                     if (update.getMessage().hasContact()) {
+                        var from = update.getMessage().getFrom();
                         String phoneNumber = update.getMessage().getContact().getPhoneNumber();
                         User user = users.get(chatId);
                         user.setPhoneNumber(phoneNumber.startsWith("+") ? phoneNumber : "+" + phoneNumber);
+                        user.setUsername(from.getUserName());
+                        user.setName(from.getFirstName());
+                        user.setSurname(from.getLastName());
                         Languages lang = user.getLanguage();
 
                         String successMessage = switch (lang) {

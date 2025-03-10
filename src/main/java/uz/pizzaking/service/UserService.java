@@ -291,12 +291,27 @@ public class UserService {
                     }
                 }
             } else if (currentState == States.WAIT_MESSAGE) {
-                String builder = "📨 Yangi xabar keldi!\n" + "👤 Kimdan: @"
-                        + (from.getUserName() != null ? from.getUserName() :
-                        "Username yo‘q") + "\n" + "📝 Ism: " + from.getFirstName()
-                        + "\n💬 Xabar: " + text + "\n";
+                String phoneNumber = users.get(chatId).getPhoneNumber();
+                Languages language = users.get(ADMIN).getLanguage();
+
+                String builder = language == Languages.UZ ? "📨 Yangi xabar keldi!\n"
+                        + "👤 Kimdan: @" + (from.getUserName() != null ? from.getUserName() : "Username yo‘q") + "\n"
+                        + "📝 Ism: " + from.getFirstName()
+                        + "\n📞 Raqam: " + phoneNumber
+                        + "\n💬 Xabar: " + text + "\n" :
+                        language == Languages.EN ? "📨 New message received!\n"
+                                + "👤 From: @" + (from.getUserName() != null ? from.getUserName() : "No username") + "\n"
+                                + "📝 Name: " + from.getFirstName()
+                                + "\n📞 Phone: " + phoneNumber
+                                + "\n💬 Message: " + text + "\n" :
+                                "📨 Пришло новое сообщение!\n"
+                                        + "👤 От кого: @" + (from.getUserName() != null ? from.getUserName() : "Нет имени пользователя") + "\n"
+                                        + "📝 Имя: " + from.getFirstName()
+                                        + "\n📞 Номер: " + phoneNumber
+                                        + "\n💬 Сообщение: " + text + "\n";
+
                 bot.sendMessage(ADMIN, builder, getInlineKeyboard(chatId, lang));
-                bot.sendMessage(chatId, lang == UZ ? Texts.res_message_uz : lang == EN ? Texts.res_message_en : Texts.res_message_ru);
+                bot.sendMessage(chatId, lang == Languages.UZ ? Texts.res_message_uz : lang == Languages.EN ? Texts.res_message_en : Texts.res_message_ru);
                 state.remove(chatId);
             }
         }
@@ -304,7 +319,7 @@ public class UserService {
 
 
     private ReplyKeyboard getInlineKeyboard(Long chatId, Languages lang) {
-
+        Languages language = users.get(ADMIN).getLanguage();
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 
 
@@ -312,7 +327,7 @@ public class UserService {
 
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         InlineKeyboardButton button1 = new InlineKeyboardButton();
-        button1.setText(lang == UZ ? "Javob berish" : lang == EN ? "Reply" : "Отвечать");
+        button1.setText(language == UZ ? "Javob berish" : language == EN ? "Reply" : "Отвечать");
         button1.setCallbackData(chatId.toString());
         buttons.add(button1);
         listButtons.add(buttons);
