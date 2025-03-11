@@ -208,4 +208,16 @@ public interface Util {
             {BACK_RU}
     };
 
+    String[][] settings_uz = {
+            {CHANGE_LANG_UZ, CHANGE_NUMBER_UZ},
+            {BACK_UZ}
+    };
+    String[][] settings_en = {
+            {CHANGE_LANG_EN, CHANGE_NUMBER_EN},
+            {BACK_EN}
+    };
+    String[][] settings_ru = {
+            {CHANGE_LANG_RU, CHANGE_NUMBER_RU},
+            {BACK_RU}
+    };
 }

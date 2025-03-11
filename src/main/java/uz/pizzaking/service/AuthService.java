@@ -44,7 +44,7 @@ public class AuthService {
                             state.put(chatId, States.LANGUAGE_SELECTION);
                         }
                         case UZ, EN, RU -> {
-                            User user = new User(chatId, null, null, null, null, null);
+                            User user = new User(chatId, null, null, null, null, null, null);
                             Languages lang = text.equals(UZ) ? Languages.UZBEK : text.equals(EN) ? Languages.ENGLISH : Languages.RUSSIAN;
                             user.setLanguage(lang);
                             users.put(chatId, user);
@@ -52,7 +52,8 @@ public class AuthService {
                             bot.sendMessage(chatId, phone_num_req(lang), createPhoneButton(phone_num_button(lang)));
                             state.put(chatId, States.PHONE_NUMBER_REQUEST);
                         }
-                        default -> bot.sendMessage(chatId, "Please select a language from the options.");
+                        default ->
+                                bot.sendMessage(chatId, "Please select a language from the options.", keyboard(languages));
                     }
                 }
                 case PHONE_NUMBER_REQUEST -> {
@@ -71,10 +72,7 @@ public class AuthService {
                         bot.sendMessage(chatId, register_success_msg(lang), main_keyboard(lang));
                         state.remove(chatId);
                     } else {
-                        User user = users.get(chatId);
-                        Languages lang = user.getLanguage();
-
-                        bot.sendMessage(chatId, phone_number_error(lang));
+                        bot.sendMessage(chatId, phone_number_error(users.get(chatId).getLanguage()));
                     }
                 }
             }

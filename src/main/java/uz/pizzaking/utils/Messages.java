@@ -77,6 +77,12 @@ public interface Messages {
                         keyboard(Util.main_ru);
     }
 
+    static ReplyKeyboard settings_keyboard(Languages lang) {
+        return lang == UZBEK ? keyboard(settings_uz) :
+                lang == ENGLISH ? keyboard(settings_en) :
+                        keyboard(settings_ru);
+    }
+
     static ReplyKeyboard main_keyboard_admin(Languages lang) {
         return lang == UZBEK ? keyboard(Util.main_admin_uz) :
                 lang == ENGLISH ? keyboard(Util.main_admin_en) :
@@ -325,14 +331,39 @@ public interface Messages {
 
     }
 
+    static String settings_menu_text(Languages lang) {
+        return lang == UZBEK ? "\uD83D\uDCCB | Sozlamalar bo'limiga xush kelibsiz!" :
+                lang == ENGLISH ? "📋 | Welcome to the settings section!" :
+                        "📋 | Добро пожаловать в раздел настроек!";
+    }
+
+    static String change_lang_msg(Languages lang) {
+        return lang == UZBEK ? "🌍 Kerakli tilni tanlang" :
+                lang == ENGLISH ? "🌍 Select the desired language" :
+                        "🌍 Выберите нужный язык";
+    }
+
+    static String change_lang_success_msg(Languages lang) {
+        return lang == UZBEK ? "✅ Til muvaffaqiyatli o'zgartirildi" :
+                lang == ENGLISH ? "✅ Language successfully changed" :
+                        "✅ Язык успешно изменен";
+    }
+
     static String response_to_user(Languages lang, Long chatId) {
         uz.pizzaking.entity.User user = users.get(chatId);
 
-        String userNameOrPhone = user.getUsername() != null ? user.getUsername() : user.getPhoneNumber();
+        String userNameOrPhone = user.getUsername() != null ? "@" + user.getUsername() : user.getPhoneNumber();
 
-        return lang == UZBEK ? "👤 " + userNameOrPhone + " ga javob bering" :
+        return lang == UZBEK ? "👤 " + userNameOrPhone + " ga javob yozing:" :
                 lang == ENGLISH ? "👤 Reply to " + userNameOrPhone :
                         "👤 Ответьте " + userNameOrPhone;
+    }
+
+    static String admin_response_to_user(Languages lang, String text) {
+        return lang == UZBEK ? "📨 Adminlar javob berdi!\n\n" +
+                "💬 Xabar: " + text + "\n" :
+                lang == ENGLISH ? "📨 The admins have responded!\n💬 Message: " + text + "\n" :
+                        "📨 Администраторы ответили!\n💬 Сообщение: " + text + "\n";
     }
 
 

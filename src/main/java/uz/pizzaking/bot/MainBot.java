@@ -1,6 +1,5 @@
 package uz.pizzaking.bot;
 
-import lombok.SneakyThrows;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
@@ -9,25 +8,48 @@ import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import uz.pizzaking.entity.enums.States;
+import uz.pizzaking.service.AdminService;
 import uz.pizzaking.service.AuthService;
 
 import java.io.File;
 import java.util.List;
 
+import static uz.pizzaking.db.Datasource.*;
+import static uz.pizzaking.db.Datasource.ADMIN;
 import static uz.pizzaking.utils.Bot.BOT_TOKEN;
 import static uz.pizzaking.utils.Bot.BOT_USERNAME;
+import static uz.pizzaking.utils.Messages.response_to_user;
 
 public class MainBot extends TelegramLongPollingBot {
 
-    @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
-        new AuthService(this).service(update);
+        if (update.hasMessage()) {
+            new AuthService(this).service(update);
+        } else if (update.hasCallbackQuery()) {
+            responseToUser(update.getCallbackQuery().getData());
+        }
+    }
+
+    private void responseToUser(String data) {
+        AdminService.replyId = Long.parseLong(data.substring(data.indexOf("id") + 2, data.indexOf("msgId")));
+        AdminService.messageId = Integer.parseInt(data.substring(data.indexOf("msgId") + 5));
+        sendMessage(ADMIN, response_to_user(adminLanguage, Long.parseLong(AdminService.replyId.toString())));
+        state.put(ADMIN, States.RESPONSE_TO_USER);
     }
 
     public void sendMessage(Long chatId, String message) {
         try {
             execute(SendMessage.builder().chatId(chatId).text(message).build());
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void sendMessage(Long chatId, String message, Integer messageId) {
+        try {
+            execute(SendMessage.builder().chatId(chatId).replyToMessageId(messageId).text(message).build());
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }

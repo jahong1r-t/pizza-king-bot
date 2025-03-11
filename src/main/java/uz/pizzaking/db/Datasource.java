@@ -19,7 +19,7 @@ public class Datasource {
     public static Map<Long, User> users = new HashMap<>();
 
     static {
-        users.put(ADMIN, new User(ADMIN, "turayev_j", "998975881554", "Jahongir", null, Languages.UZBEK));
+        users.put(ADMIN, new User(ADMIN, "turayev_j", "+998975881554", "Jahongir", null, Languages.UZBEK, null));
     }
 
     public static Languages adminLanguage = users.get(ADMIN).getLanguage();

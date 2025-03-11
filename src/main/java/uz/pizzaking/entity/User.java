@@ -3,6 +3,7 @@ package uz.pizzaking.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.telegram.telegrambots.meta.api.objects.Location;
 import uz.pizzaking.entity.enums.Languages;
 
 @AllArgsConstructor
@@ -15,4 +16,5 @@ public class User {
     private String name;
     private String surname;
     private Languages language;
+    private Location location;
 }
