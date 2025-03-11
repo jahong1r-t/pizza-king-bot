@@ -182,4 +182,13 @@ public interface Buttons {
     String BACK_UZ = "⬅️ Orqaga";
     String BACK_EN = "⬅️ Back";
     String BACK_RU = "⬅️ Назад";
+
+    String CHANGE_LANG_UZ = "🌍 Tilni o'zgartirish";
+    String CHANGE_LANG_EN = "🌍 Change language";
+    String CHANGE_LANG_RU = "🌍 Изменить язык";
+
+    String CHANGE_NUMBER_UZ = "📞 Telefon raqamini o'zgartirish";
+    String CHANGE_NUMBER_EN = "📞 Change phone number";
+    String CHANGE_NUMBER_RU = "📞 Изменить номер телефона";
+
 }

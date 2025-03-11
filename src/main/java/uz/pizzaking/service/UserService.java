@@ -1,6 +1,5 @@
 package uz.pizzaking.service;
 
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -18,6 +17,7 @@ import static uz.pizzaking.db.Datasource.*;
 import static uz.pizzaking.entity.enums.Languages.*;
 import static uz.pizzaking.utils.Buttons.*;
 import static uz.pizzaking.utils.Messages.*;
+import static uz.pizzaking.utils.Util.languages;
 
 public class UserService {
     private final MainBot bot;
@@ -29,10 +29,9 @@ public class UserService {
     public void service(Update update) {
         String text = update.getMessage().getText();
         Long chatId = update.getMessage().getChatId();
+        Integer messageId = update.getMessage().getMessageId();
         User from = update.getMessage().getFrom();
         Languages lang = users.get(chatId).getLanguage();
-
-        System.err.println(update.hasCallbackQuery() ? update.getCallbackQuery().getData() : "no data user");
 
         if (update.hasMessage()) {
             state.putIfAbsent(chatId, States.MAIN_MENU);
@@ -47,11 +46,36 @@ public class UserService {
                     }
                     case ABOUT_UZ, ABOUT_EN, ABOUT_RU -> bot.sendMessage(chatId, about_msg(lang), logo_path);
                     case CALL_UZ, CALL_EN, CALL_RU -> bot.sendMessage(chatId, call_num_msg(lang), call_path);
+                    case SETTINGS_UZ, SETTINGS_EN, SETTINGS_RU -> {
+                        bot.sendMessage(chatId, settings_menu_text(lang), settings_keyboard(lang));
+                        state.put(chatId, States.SETTINGS);
+                    }
                     case SEND_MESSAGE_UZ, SEND_MESSAGE_EN, SEND_MESSAGE_RU -> {
                         bot.sendMessage(chatId, send_msg(lang));
                         state.put(chatId, States.WAIT_MESSAGE);
                     }
                     default -> bot.sendMessage(chatId, error_msg(lang));
+                }
+
+
+            } else if (currentState == States.SETTINGS) {
+                switch (text) {
+                    case CHANGE_LANG_UZ, CHANGE_LANG_EN, CHANGE_LANG_RU -> {
+                        bot.sendMessage(chatId, change_lang_msg(lang), keyboard(languages));
+                    }
+                    case UZ, EN, RU -> {
+                        Languages newLang = text.equals(UZ) ? Languages.UZBEK : text.equals(EN) ? Languages.ENGLISH : Languages.RUSSIAN;
+                        users.get(chatId).setLanguage(newLang);
+
+                        Languages language = users.get(chatId).getLanguage();
+
+                        bot.sendMessage(chatId, change_lang_success_msg(language), main_keyboard(language));
+                        state.put(chatId, States.MAIN_MENU);
+                    }
+                    case BACK_UZ, BACK_RU, BACK_EN -> {
+                        bot.sendMessage(chatId, welcome_msg(lang), main_keyboard(lang));
+                        state.put(chatId, States.MAIN_MENU);
+                    }
                 }
             } else if (currentState == States.PRODUCT_MENU) {
                 switch (text) {
@@ -129,9 +153,9 @@ public class UserService {
                     case DESSERT_CHEESECAKE_UZ, DESSERT_CHEESECAKE_RU ->
                             bot.sendMessage(chatId, dessert_cheesecake_details(lang), new File("src/main/resources/cake_cheesecake.jpg"), productInlineButton(chatId, lang));
                     case DESSERT_MEDOVIK_UZ, DESSERT_MEDOVIK_RU ->
-                            bot.sendMessage(chatId, dessert_medovik_details(lang), new File("src/main/resources/cace_medovik.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, dessert_medovik_details(lang), new File("src/main/resources/cake_medovik.jpg"), productInlineButton(chatId, lang));
                     case DESSERT_NAPALEON_UZ, DESSERT_NAPALEON_EN, DESSERT_NAPALEON_RU ->
-                            bot.sendMessage(chatId, dessert_napoleon_details(lang), new File("src/main/resources/cace_napaleon.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, dessert_napoleon_details(lang), new File("src/main/resources/cake_napaleon.jpg"), productInlineButton(chatId, lang));
                     case DRINKS_COLA_UZ, DRINKS_COLA_RU ->
                             bot.sendMessage(chatId, drinks_cola_details(lang), new File("src/main/resources/drink_cola.jpg"), productInlineButton(chatId, lang));
                     case DRINKS_SPRITE_UZ, DRINKS_SPRITE_RU ->
@@ -139,7 +163,7 @@ public class UserService {
                     case DRINKS_TEA_UZ, DRINKS_TEA_EN, DRINKS_TEA_RU ->
                             bot.sendMessage(chatId, drinks_tea_details(lang), new File("src/main/resources/drink_tea.jpg"), productInlineButton(chatId, lang));
                     case DRINKS_COFFEE_UZ, DRINKS_COFFEE_EN, DRINKS_COFFEE_RU ->
-                            bot.sendMessage(chatId, drinks_coffee_details(lang), new File("src/main/resources/drink_coffe.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, drinks_coffee_details(lang), new File("src/main/resources/drink_coffee.jpg"), productInlineButton(chatId, lang));
                     case BACK_UZ, BACK_EN, BACK_RU -> {
                         bot.sendMessage(chatId, back_msg(lang), product_menu(lang));
                         state.put(chatId, States.PRODUCT_MENU);
@@ -149,14 +173,14 @@ public class UserService {
                 String phoneNumber = users.get(chatId).getPhoneNumber();
                 Languages language = users.get(ADMIN).getLanguage();
 
-                bot.sendMessage(ADMIN, msg_to_admin(language, from, phoneNumber, text), getInlineKeyboard(chatId));
+                    bot.sendMessage(ADMIN, msg_to_admin(language, from, phoneNumber, text), getInlineKeyboard(chatId, "id" + chatId + "msgId" + messageId));
                 bot.sendMessage(chatId, res_message(lang));
                 state.remove(chatId);
             }
         }
     }
 
-    private ReplyKeyboard getInlineKeyboard(Long chatId) {
+    private ReplyKeyboard getInlineKeyboard(Long chatId, String data) {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> listButtons = new ArrayList<>();
@@ -164,7 +188,7 @@ public class UserService {
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         InlineKeyboardButton button1 = new InlineKeyboardButton();
         button1.setText(adminLanguage == UZBEK ? "Javob berish" : adminLanguage == ENGLISH ? "Reply" : "Отвечать");
-        button1.setCallbackData(chatId.toString());
+        button1.setCallbackData(data);
         buttons.add(button1);
         listButtons.add(buttons);
 
