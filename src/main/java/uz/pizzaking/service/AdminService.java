@@ -39,9 +39,7 @@ public class AdminService {
                             bot.sendMessage(ADMIN, welcome_admin(adminLanguage), main_keyboard_admin(adminLanguage));
                     case USERS_UZ, USERS_RU, USERS_EN ->
                             bot.sendMessage(ADMIN, getUserListMessage(users, adminLanguage));
-                    case STATISTICS_UZ -> {
-
-                    }
+                    case STATISTICS_UZ -> bot.sendMessage(ADMIN, "Coming soon!");
                     case MESSAGE_FOR_ALL_UZ, MESSAGE_FOR_ALL_EN, MESSAGE_FOR_ALL_RU -> {
                         bot.sendMessage(chatId, send_msg_to_all_admin(adminLanguage));
                         state.put(chatId, States.SEND_MESSAGE_TO_ALL);
@@ -53,9 +51,8 @@ public class AdminService {
                 }
             } else if (currentState == States.SETTINGS) {
                 switch (text) {
-                    case CHANGE_LANG_UZ, CHANGE_LANG_EN, CHANGE_LANG_RU -> {
-                        bot.sendMessage(chatId, change_lang_msg(adminLanguage), keyboard(languages));
-                    }
+                    case CHANGE_LANG_UZ, CHANGE_LANG_EN, CHANGE_LANG_RU ->
+                            bot.sendMessage(chatId, change_lang_msg(adminLanguage), keyboard(languages));
                     case UZ, EN, RU -> {
                         Languages newLang = text.equals(UZ) ? Languages.UZBEK : text.equals(EN) ? Languages.ENGLISH : Languages.RUSSIAN;
                         users.get(chatId).setLanguage(newLang);

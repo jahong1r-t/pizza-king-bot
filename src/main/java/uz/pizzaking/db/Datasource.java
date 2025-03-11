@@ -1,6 +1,9 @@
 package uz.pizzaking.db;
 
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import uz.pizzaking.entity.Basket;
 import uz.pizzaking.entity.Product;
@@ -20,7 +23,7 @@ public class Datasource {
     public static final List<Product> products = new ArrayList<>();
 
     static {
-        users.put(ADMIN, new User(ADMIN, "turayev_j", "+998975881554", "Jahongir", null, new Basket(ADMIN, new ArrayList<>()), Languages.UZBEK, null));
+        users.put(ADMIN, new User(ADMIN, "turayev_j", "+998975881554", "Jahongir", null, new Basket(ADMIN, new ArrayList<>()), null, Languages.UZBEK, null));
     }
 
 
@@ -67,5 +70,23 @@ public class Datasource {
         reply.setKeyboard(rows);
 
         return reply;
+    }
+
+    public static ReplyKeyboard inlineKeyboard(String[][] buttons, String[][] data) {
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+
+        for (int i = 0; i < buttons.length; i++) {
+            List<InlineKeyboardButton> buttonRow = new ArrayList<>();
+            for (int j = 0; j < buttons[i].length; j++) {
+                buttonRow.add(InlineKeyboardButton.builder().callbackData(data[i][j]).text(buttons[i][j]).build());
+            }
+            rows.add(buttonRow);
+        }
+
+        markup.setKeyboard(rows);
+
+        return markup;
     }
 }

@@ -191,4 +191,28 @@ public interface Buttons {
     String CHANGE_NUMBER_EN = "📞 Change phone number";
     String CHANGE_NUMBER_RU = "📞 Изменить номер телефона";
 
+
+    ///Inline buttons
+    String PLUS = "+";
+    String MINUS = "-";
+
+    String ADD_CART_UZ = "Savatga qo'shish 🛒";
+    String ADD_CART_EN = "Add to cart 🛒";
+    String ADD_CART_RU = "Добавить в корзину 🛒";
+
+    String REPLY_UZ = "Javob berish";
+    String REPLY_EN = "Reply";
+    String REPLY_RU = "Отвечать";
+
+    String CONFORM_UZ = "✔️ Tasdiqlash";
+    String CONFORM_EN = "✔️ Confirmation";
+    String CONFORM_RU = "✔️ Подтверждение";
+
+    String REJECT_UZ = "❌ Rad etish";
+    String REJECT_EN = "❌ Rejection";
+    String REJECT_RU = "❌ Отклонить";
+
+    String ORDER_UZ = "Buyurtma berish";
+    String ORDER_EN = "Make an order";
+    String ORDER_RU = "Сделать заказ";
 }

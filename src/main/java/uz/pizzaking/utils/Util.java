@@ -220,4 +220,52 @@ public interface Util {
             {CHANGE_LANG_RU, CHANGE_NUMBER_RU},
             {BACK_RU}
     };
+
+    ///Inline keyboard
+
+    String[][] inline_product_uz = {
+            {MINUS, PLUS},
+            {ADD_CART_UZ}
+    };
+    String[][] inline_product_en = {
+            {MINUS, PLUS},
+            {ADD_CART_EN}
+    };
+    String[][] inline_product_ru = {
+            {MINUS, PLUS},
+            {ADD_CART_RU}
+    };
+
+    String[][] reply_uz = {
+            {REPLY_UZ}
+    };
+    String[][] reply_en = {
+            {REPLY_EN}
+
+    };
+    String[][] reply_ru = {
+            {REPLY_RU}
+    };
+
+    String[][] order_conform_uz = {
+            {CONFORM_UZ, REJECT_UZ}
+    };
+    String[][] order_conform_en = {
+            {CONFORM_EN, REJECT_EN}
+    };
+    String[][] order_conform_ru = {
+            {CONFORM_RU, REJECT_RU}
+    };
+
+
+    String[][] order_uz = {
+            {ORDER_UZ}
+    };
+    String[][] order_en = {
+            {ORDER_EN}
+    };
+    String[][] order_ru = {
+            {ORDER_RU}
+    };
+
 }
