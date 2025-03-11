@@ -2,13 +2,15 @@ package uz.pizzaking.utils;
 
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
+import uz.pizzaking.entity.Product;
 import uz.pizzaking.entity.enums.Languages;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static uz.pizzaking.db.Datasource.keyboard;
-import static uz.pizzaking.db.Datasource.users;
+import static uz.pizzaking.db.Datasource.*;
 import static uz.pizzaking.entity.enums.Languages.ENGLISH;
 import static uz.pizzaking.entity.enums.Languages.UZBEK;
 import static uz.pizzaking.utils.Util.*;
@@ -149,145 +151,15 @@ public interface Messages {
                         keyboard(Util.fries_sub_ru);
     }
 
-    static String pizza_classic_details(Languages lang) {
-        return lang == UZBEK ? "🍕 Klassik pitsa\nNarxi: 90 000 so'm" :
-                lang == ENGLISH ? "🍕 Classic pizza\nPrice: 90 000 sum" :
-                        "🍕 Классическая пицца\nЦена: 90 000 сум.";
-
-    }
-
-    static String pizza_pepperoni_details(Languages lang) {
-        return lang == UZBEK ? "🍕 Pepperonie pitsa\nNarxi: 120 000 so'm" :
-                lang == ENGLISH ? "🍕 Pepperoni pizza\nPrice: 120 000 sum" :
-                        "🍕 Пицца Пепперони\nЦена: 120 000 сум.";
-    }
-
-    static String pizza_margherita_details(Languages lang) {
-        return lang == UZBEK ? "🍕 Margherita pitsa\nNarxi: 110 000 so'm" :
-                lang == ENGLISH ? "🍕 Margherita pizza\nPrice: 110 000 sum" :
-                        "🍕 Пицца Маргарита\nЦена: 110 000 сум.";
-
-    }
-
-    static String burger_cheese_details(Languages lang) {
-        return lang == UZBEK ? "🍔 Klassik gamburger\nNarxi: 60 000 so'm" :
-                lang == ENGLISH ? "🍔 Cheeseburger\nPrice: 60 000 sum" :
-                        "🍔 Чизбургер\nЦена: 60 000 сум.";
-    }
-
-    static String burger_chicken_details(Languages lang) {
-        return lang == UZBEK ? "🍔 Tovuqli gamburger\nNarxi: 55 000 so'm" :
-                lang == ENGLISH ? "🍔 Chicken Burger\nPrice: 55 000 sum" :
-                        "🍔 Куриный бургер\nЦена: 55 000 сум.";
-
-    }
-
-    static String burger_double_details(Languages lang) {
-        return lang == UZBEK ? "🍔 Ikki qavatli gamburger\nNarxi: 80 000 so'm" :
-                lang == ENGLISH ? "🍔 Double Burger\nPrice: 80 000 sum" :
-                        "🍔 Двойной бургер\nЦена: 80 000 сум.";
-    }
-
-    static String hotdog_classic_details(Languages lang) {
-        return lang == UZBEK ? "🌭 Klassik hotdog\nNarxi: 30 000 so'm" :
-                lang == ENGLISH ? "🌭 Classic hotdog\nPrice: 30 000 sum" :
-                        "🌭 Классический хот-дог\nЦена: 30 000 сум.";
-    }
-
-    static String hotdog_chili_details(Languages lang) {
-        return lang == UZBEK ? "🌭 Chili hotdog\nNarxi: 35 000 so'm" :
-                lang == ENGLISH ? "🌭 Chili Dog\nPrice: 35 000 sum" :
-                        "🌭 Чили дог\nЦена: 35 000 сум.";
-    }
-
-    static String hotdog_cheese_details(Languages lang) {
-        return lang == UZBEK ? "🌭 Pishloqli hotdog\nNarxi: 40 000 so'm" :
-                lang == ENGLISH ? "🌭 Cheese Dog\nPrice: 40 000 sum" :
-                        "🌭 Сырный дог\nЦена: 40 000 сум.";
-    }
-
-    static String lavash_meat_details(Languages lang) {
-        return lang == UZBEK ? "🥙 Go‘shtli lavash\nNarxi: 45 000 so'm" :
-                lang == ENGLISH ? "🥙 Meat Lavash\nPrice: 45 000 sum" :
-                        "🥙 Мясной лаваш\nЦена: 45 000 сум.";
-    }
-
-    static String lavash_chicken_details(Languages lang) {
-        return lang == UZBEK ? "🥙 Tovuqli lavash\nNarxi: 40 000 so'm" :
-                lang == ENGLISH ? "🥙 Chicken Lavash\nPrice: 40 000 sum" :
-                        "🥙 Куриный лаваш\nЦена: 40 000 сум.";
-    }
-
-    static String lavash_cheese_details(Languages lang) {
-        return lang == UZBEK ? "🥙 Pishloqli lavash\nNarxi: 42 000 so'm" :
-                lang == ENGLISH ? "🥙 Cheese Lavash\nPrice: 42 000 sum" :
-                        "🥙 Сырный лаваш\nЦена: 42 000 сум.";
-    }
-
-    static String sandwich_club_details(Languages lang) {
-        return lang == UZBEK ? "🥪 Klub sendvichi\nNarxi: 50 000 so'm" :
-                lang == ENGLISH ? "🥪 Club Sandwich\nPrice: 50 000 sum" :
-                        "🥪 Клубный сэндвич\nЦена: 50 000 сум.";
-    }
-
-    static String sandwich_veggie_details(Languages lang) {
-        return lang == UZBEK ? "🥪 Pishloqli sendvich\nNarxi: 45 000 so'm" :
-                lang == ENGLISH ? "🥪 Veggie Sandwich\nPrice: 45 000 sum" :
-                        "🥪 Овощной сэндвич\nЦена: 45 000 сум.";
-    }
-
-    static String fries_plain_details(Languages lang) {
-        return lang == UZBEK ? "🍟 Oddiy kartoshka fri\nNarxi: 20 000 so'm" :
-                lang == ENGLISH ? "🍟 Plain fries\nPrice: 20 000 sum" :
-                        "🍟 Обычная картошка фри\nЦена: 20 000 сум.";
-    }
-
-    static String fries_cheese_details(Languages lang) {
-        return lang == UZBEK ? "🍟 Pishloqli kartoshka fri\nNarxi: 25 000 so'm" :
-                lang == ENGLISH ? "🍟 Cheesy fries\nPrice: 25 000 sum" :
-                        "🍟 Картошка фри с сырным соусом\nЦена: 25 000 сум.";
-    }
-
-    static String dessert_cheesecake_details(Languages lang) {
-        return lang == UZBEK ? "🍮 Cheesecake\nNarxi: 35 000 so'm" :
-                lang == ENGLISH ? "🍮 Cheesecake\nPrice: 35 000 sum" :
-                        "🍮 Чизкейк\nЦена: 35 000 сум.";
-    }
-
-    static String dessert_medovik_details(Languages lang) {
-        return lang == UZBEK ? "🍮 Medovik\nNarxi: 30 000 so'm" :
-                lang == ENGLISH ? "🍮 Medovik\nPrice: 30 000 sum" :
-                        "🍮 Медовик\nЦена: 30 000 сум.";
-    }
-
-    static String dessert_napoleon_details(Languages lang) {
-        return lang == UZBEK ? "🍮 Napaleon\nNarxi: 32 000 so'm" :
-                lang == ENGLISH ? "🍮 Napoleon\nPrice: 32 000 sum" :
-                        "🍮 Наполеон\nЦена: 32 000 сум.";
-    }
-
-    static String drinks_cola_details(Languages lang) {
-        return lang == UZBEK ? "🥤 Cola\nNarxi: 10 000 so'm" :
-                lang == ENGLISH ? "🥤 Cola\nPrice: 10 000 sum" :
-                        "🥤 Кола\nЦена: 10 000 сум.";
-    }
-
-    static String drinks_sprite_details(Languages lang) {
-        return lang == UZBEK ? "🥤 Sprite\nNarxi: 10 000 so'm" :
-                lang == ENGLISH ? "🥤 Sprite\nPrice: 10 000 sum" :
-                        "🥤 Спрайт\nЦена: 10 000 сум.";
-    }
-
-    static String drinks_tea_details(Languages lang) {
-        return lang == UZBEK ? "🍵 Choy\nNarxi: 8 000 so'm" :
-                lang == ENGLISH ? "🍵 Tea\nPrice: 8 000 sum" :
-                        "🍵 Чай\nЦена: 8 000 сум.";
-    }
-
-    static String drinks_coffee_details(Languages lang) {
-        return lang == UZBEK ? "☕ Kofe\nNarxi: 12 000 so'm" :
-                lang == ENGLISH ? "☕ Coffee\nPrice: 12 000 sum" :
-                        "☕ Кофе\nЦена: 12 000 сум.";
+    static String getProductDetails(String productName, Languages lang) {
+        for (Product product : products) {
+            if (product.getNameUz().equals(productName) || product.getNameEn().equals(productName) || product.getNameRu().equals(productName)) {
+                return lang == Languages.UZBEK ? product.getNameUz() + "\nNarxi: " + product.getPrice() + " so'm" :
+                        lang == Languages.ENGLISH ? product.getNameEn() + "\nPrice: " + product.getPrice() + " sum" :
+                                product.getNameRu() + "\nЦена: " + product.getPrice() + " сум";
+            }
+        }
+        return "Mahsulot topilmadi";
     }
 
     static String back_msg(Languages lang) {
@@ -304,6 +176,12 @@ public interface Messages {
         return lang == UZBEK ? "Savatga qo'shish 🛒" :
                 lang == ENGLISH ? "Add to cart 🛒" :
                         "Добавить в корзину 🛒";
+    }
+
+    static String product_add_success(Languages lang) {
+        return lang == Languages.UZBEK ? "Mahsulot savatga qo‘shildi 🛒" :
+                lang == Languages.ENGLISH ? "Product added to cart 🛒" :
+                        "Товар добавлен в корзину 🛒";
     }
 
     static String register_success_msg(Languages lang) {
@@ -385,6 +263,52 @@ public interface Messages {
                                 + "💬 Сообщение: " + text + "\n";
     }
 
+    static String getBasketDetails(Long chatId, Languages lang) {
+        uz.pizzaking.entity.User user = users.get(chatId);
+        if (user == null || user.getBasket() == null || user.getBasket().getProducts().isEmpty()) {
+            return lang == Languages.UZBEK ? "Sizning savatingiz bo‘sh 🛒" :
+                    lang == Languages.ENGLISH ? "Your cart is empty 🛒" :
+                            "Ваша корзина пуста 🛒";
+        }
+
+        List<Product> basketProducts = user.getBasket().getProducts();
+        StringBuilder basketDetails = new StringBuilder();
+        int totalPrice = 0;
+
+        basketDetails.append(lang == Languages.UZBEK ? "📋 Sizning savatingiz:\n\n" :
+                lang == Languages.ENGLISH ? "📋 Your cart:\n\n" :
+                        "📋 Ваша корзина:\n\n");
+
+        Map<Product, Integer> productCount = new HashMap<>();
+        for (Product product : basketProducts) {
+            productCount.put(product, productCount.getOrDefault(product, 0) + 1);
+        }
+
+        int index = 1;
+        for (Map.Entry<Product, Integer> entry : productCount.entrySet()) {
+            Product product = entry.getKey();
+            int quantity = entry.getValue();
+            String name = lang == Languages.UZBEK ? product.getNameUz() :
+                    lang == Languages.ENGLISH ? product.getNameEn() :
+                            product.getNameRu();
+            int price = product.getPrice();
+            int subtotal = price * quantity;
+
+            basketDetails.append(String.format("%d. %s - %d x %,d = %,d %s\n",
+                    index++, name, quantity, price, subtotal,
+                    lang == Languages.UZBEK ? "so‘m" :
+                            lang == Languages.ENGLISH ? "sum" :
+                                    "сум"));
+            totalPrice += subtotal;
+        }
+
+        basketDetails.append("\n");
+        basketDetails.append(lang == Languages.UZBEK ? String.format("Jami: %,d so‘m", totalPrice) :
+                lang == Languages.ENGLISH ? String.format("Total: %,d sum", totalPrice) :
+                        String.format("Итого: %,d сум", totalPrice));
+
+        return basketDetails.toString();
+    }
 
     static String getUserInfo(uz.pizzaking.entity.User user, Languages adminLang) {
         String username = user.getUsername() != null ? "@" + user.getUsername() :

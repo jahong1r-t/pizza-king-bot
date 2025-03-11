@@ -15,6 +15,7 @@ public class User {
     private String phoneNumber;
     private String name;
     private String surname;
+    private Basket basket;
     private Languages language;
     private Location location;
 }

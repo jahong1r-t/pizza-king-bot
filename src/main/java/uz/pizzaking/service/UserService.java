@@ -44,8 +44,15 @@ public class UserService {
                         bot.sendMessage(chatId, select_msg(lang), product_menu(lang));
                         state.put(chatId, States.PRODUCT_MENU);
                     }
-                    case ABOUT_UZ, ABOUT_EN, ABOUT_RU -> bot.sendMessage(chatId, about_msg(lang), logo_path);
-                    case CALL_UZ, CALL_EN, CALL_RU -> bot.sendMessage(chatId, call_num_msg(lang), call_path);
+                    case BASKET_EN, BASKET_RU, BASKET_UZ -> {
+                        bot.sendMessage(chatId, getBasketDetails(chatId, lang));
+                    }
+                    case ABOUT_UZ, ABOUT_EN, ABOUT_RU -> {
+                        bot.sendMessage(chatId, about_msg(lang), logo_path);
+                    }
+                    case CALL_UZ, CALL_EN, CALL_RU -> {
+                        bot.sendMessage(chatId, call_num_msg(lang), call_path);
+                    }
                     case SETTINGS_UZ, SETTINGS_EN, SETTINGS_RU -> {
                         bot.sendMessage(chatId, settings_menu_text(lang), settings_keyboard(lang));
                         state.put(chatId, States.SETTINGS);
@@ -119,51 +126,51 @@ public class UserService {
             } else if (currentState == States.PRODUCT_SUB_MENU) {
                 switch (text) {
                     case PIZZA_CLASSIC_UZ, PIZZA_CLASSIC_EN, PIZZA_CLASSIC_RU ->
-                            bot.sendMessage(chatId, pizza_classic_details(lang), new File("src/main/resources/pizza_classic.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🍕 Classic pizza", lang), new File("src/main/resources/pizza_classic.jpg"), productInlineButton(chatId, lang, "🍕 Classic pizza"));
                     case PIZZA_PEPPERONI_UZ, PIZZA_PEPPERONI_EN, PIZZA_PEPPERONI_RU ->
-                            bot.sendMessage(chatId, pizza_pepperoni_details(lang), new File("src/main/resources/pizza_pepperoni.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🍕 Pepperoni pizza", lang), new File("src/main/resources/pizza_pepperoni.jpg"), productInlineButton(chatId, lang, "🍕 Pepperoni pizza"));
                     case PIZZA_MARGHERITA_UZ, PIZZA_MARGHERITA_RU ->
-                            bot.sendMessage(chatId, pizza_margherita_details(lang), new File("src/main/resources/pizza_cheese.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🍕 Margherita pizza", lang), new File("src/main/resources/pizza_cheese.jpg"), productInlineButton(chatId, lang, "🍕 Margherita pizza"));
                     case BURGER_CHEESE_UZ, BURGER_CHEESE_EN, BURGER_CHEESE_RU ->
-                            bot.sendMessage(chatId, burger_cheese_details(lang), new File("src/main/resources/burger_classic.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🍔 Cheeseburger", lang), new File("src/main/resources/burger_classic.jpg"), productInlineButton(chatId, lang, "🍔 Cheeseburger"));
                     case BURGER_CHICKEN_UZ, BURGER_CHICKEN_EN, BURGER_CHICKEN_RU ->
-                            bot.sendMessage(chatId, burger_chicken_details(lang), new File("src/main/resources/burger_chicken.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🍔 Chicken Burger", lang), new File("src/main/resources/burger_chicken.jpg"), productInlineButton(chatId, lang, "🍔 Chicken Burger"));
                     case BURGER_DOUBLE_UZ, BURGER_DOUBLE_EN, BURGER_DOUBLE_RU ->
-                            bot.sendMessage(chatId, burger_double_details(lang), new File("src/main/resources/burger_double.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🍔 Double Burger", lang), new File("src/main/resources/burger_double.jpg"), productInlineButton(chatId, lang, "🍔 Double Burger"));
                     case HOTDOG_CLASSIC_UZ, HOTDOG_CLASSIC_EN, HOTDOG_CLASSIC_RU ->
-                            bot.sendMessage(chatId, hotdog_classic_details(lang), new File("src/main/resources/hotdog_classic.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🌭 Classic hotdog", lang), new File("src/main/resources/hotdog_classic.jpg"), productInlineButton(chatId, lang, "🌭 Classic hotdog"));
                     case HOTDOG_CHILI_UZ, HOTDOG_CHILI_EN, HOTDOG_CHILI_RU ->
-                            bot.sendMessage(chatId, hotdog_chili_details(lang), new File("src/main/resources/hotdog_chili.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🌭 Chili Dog", lang), new File("src/main/resources/hotdog_chili.jpg"), productInlineButton(chatId, lang, "🌭 Chili Dog"));
                     case HOTDOG_CHEESE_UZ, HOTDOG_CHEESE_EN, HOTDOG_CHEESE_RU ->
-                            bot.sendMessage(chatId, hotdog_cheese_details(lang), new File("src/main/resources/hotdog_cheese.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🌭 Cheese Dog", lang), new File("src/main/resources/hotdog_cheese.jpg"), productInlineButton(chatId, lang, "🌭 Cheese Dog"));
                     case LAVASH_MEAT_UZ, LAVASH_MEAT_EN, LAVASH_MEAT_RU ->
-                            bot.sendMessage(chatId, lavash_meat_details(lang), new File("src/main/resources/lavash_meat.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🥙 Meat Lavash", lang), new File("src/main/resources/lavash_meat.jpg"), productInlineButton(chatId, lang, "🥙 Meat Lavash"));
                     case LAVASH_CHICKEN_UZ, LAVASH_CHICKEN_EN, LAVASH_CHICKEN_RU ->
-                            bot.sendMessage(chatId, lavash_chicken_details(lang), new File("src/main/resources/lavash_chicken.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🥙 Chicken Lavash", lang), new File("src/main/resources/lavash_chicken.jpg"), productInlineButton(chatId, lang, "🥙 Chicken Lavash"));
                     case LAVASH_CHEESE_UZ, LAVASH_CHEESE_EN, LAVASH_CHEESE_RU ->
-                            bot.sendMessage(chatId, lavash_cheese_details(lang), new File("src/main/resources/lavash_cheese.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🥙 Cheese Lavash", lang), new File("src/main/resources/lavash_cheese.jpg"), productInlineButton(chatId, lang, "🥙 Cheese Lavash"));
                     case SANDWICH_CLUB_UZ, SANDWICH_CLUB_EN, SANDWICH_CLUB_RU ->
-                            bot.sendMessage(chatId, sandwich_club_details(lang), new File("src/main/resources/sandwich_classic.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🥪 Club Sandwich", lang), new File("src/main/resources/sandwich_classic.jpg"), productInlineButton(chatId, lang, "🥪 Club Sandwich"));
                     case SANDWICH_VEGGIE_UZ, SANDWICH_VEGGIE_EN, SANDWICH_VEGGIE_RU ->
-                            bot.sendMessage(chatId, sandwich_veggie_details(lang), new File("src/main/resources/sandwich_cheese.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🥪 Veggie Sandwich", lang), new File("src/main/resources/sandwich_cheese.jpg"), productInlineButton(chatId, lang, "🥪 Veggie Sandwich"));
                     case FRIES_PLAIN_UZ, FRIES_PLAIN_EN, FRIES_PLAIN_RU ->
-                            bot.sendMessage(chatId, fries_plain_details(lang), new File("src/main/resources/fri_classic.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🍟 Plain fries", lang), new File("src/main/resources/fri_classic.jpg"), productInlineButton(chatId, lang, "🍟 Plain fries"));
                     case FRIES_CHEESE_UZ, FRIES_CHEESE_EN, FRIES_CHEESE_RU ->
-                            bot.sendMessage(chatId, fries_cheese_details(lang), new File("src/main/resources/fri_cheese.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🍟 Cheesy fries", lang), new File("src/main/resources/fri_cheese.jpg"), productInlineButton(chatId, lang, "🍟 Cheesy fries"));
                     case DESSERT_CHEESECAKE_UZ, DESSERT_CHEESECAKE_RU ->
-                            bot.sendMessage(chatId, dessert_cheesecake_details(lang), new File("src/main/resources/cake_cheesecake.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🍮 Cheesecake", lang), new File("src/main/resources/cake_cheesecake.jpg"), productInlineButton(chatId, lang, "🍮 Cheesecake"));
                     case DESSERT_MEDOVIK_UZ, DESSERT_MEDOVIK_RU ->
-                            bot.sendMessage(chatId, dessert_medovik_details(lang), new File("src/main/resources/cake_medovik.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🍮 Medovik", lang), new File("src/main/resources/cake_medovik.jpg"), productInlineButton(chatId, lang, "🍮 Medovik"));
                     case DESSERT_NAPALEON_UZ, DESSERT_NAPALEON_EN, DESSERT_NAPALEON_RU ->
-                            bot.sendMessage(chatId, dessert_napoleon_details(lang), new File("src/main/resources/cake_napaleon.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🍮 Napoleon", lang), new File("src/main/resources/cake_napaleon.jpg"), productInlineButton(chatId, lang, "🍮 Napoleon"));
                     case DRINKS_COLA_UZ, DRINKS_COLA_RU ->
-                            bot.sendMessage(chatId, drinks_cola_details(lang), new File("src/main/resources/drink_cola.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🥤 Cola", lang), new File("src/main/resources/drink_cola.jpg"), productInlineButton(chatId, lang, "🥤 Cola"));
                     case DRINKS_SPRITE_UZ, DRINKS_SPRITE_RU ->
-                            bot.sendMessage(chatId, drinks_sprite_details(lang), new File("src/main/resources/drink_sprite.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🥤 Sprite", lang), new File("src/main/resources/drink_sprite.jpg"), productInlineButton(chatId, lang, "🥤 Sprite"));
                     case DRINKS_TEA_UZ, DRINKS_TEA_EN, DRINKS_TEA_RU ->
-                            bot.sendMessage(chatId, drinks_tea_details(lang), new File("src/main/resources/drink_tea.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("🍵 Tea", lang), new File("src/main/resources/drink_tea.jpg"), productInlineButton(chatId, lang, "🍵 Tea"));
                     case DRINKS_COFFEE_UZ, DRINKS_COFFEE_EN, DRINKS_COFFEE_RU ->
-                            bot.sendMessage(chatId, drinks_coffee_details(lang), new File("src/main/resources/drink_coffee.jpg"), productInlineButton(chatId, lang));
+                            bot.sendMessage(chatId, getProductDetails("☕ Coffee", lang), new File("src/main/resources/drink_coffee.jpg"), productInlineButton(chatId, lang, "☕ Coffee"));
                     case BACK_UZ, BACK_EN, BACK_RU -> {
                         bot.sendMessage(chatId, back_msg(lang), product_menu(lang));
                         state.put(chatId, States.PRODUCT_MENU);
@@ -173,14 +180,14 @@ public class UserService {
                 String phoneNumber = users.get(chatId).getPhoneNumber();
                 Languages language = users.get(ADMIN).getLanguage();
 
-                    bot.sendMessage(ADMIN, msg_to_admin(language, from, phoneNumber, text), getInlineKeyboard(chatId, "id" + chatId + "msgId" + messageId));
+                bot.sendMessage(ADMIN, msg_to_admin(language, from, phoneNumber, text), getInlineKeyboard("id" + chatId + "msgId" + messageId));
                 bot.sendMessage(chatId, res_message(lang));
                 state.remove(chatId);
             }
         }
     }
 
-    private ReplyKeyboard getInlineKeyboard(Long chatId, String data) {
+    private ReplyKeyboard getInlineKeyboard(String data) {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> listButtons = new ArrayList<>();
@@ -196,7 +203,7 @@ public class UserService {
         return markup;
     }
 
-    private ReplyKeyboard productInlineButton(Long chatId, Languages lang) {
+    private ReplyKeyboard productInlineButton(Long chatId, Languages lang, String productName) {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
@@ -217,7 +224,7 @@ public class UserService {
         InlineKeyboardButton addToCartButton = new InlineKeyboardButton();
 
         addToCartButton.setText(to_cart(lang));
-        addToCartButton.setCallbackData(chatId + "add_to_cart");
+        addToCartButton.setCallbackData("addCart" + chatId + "_" + productName);
 
         secondRow.add(addToCartButton);
         rows.add(secondRow);
