@@ -8,9 +8,12 @@ import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import uz.pizzaking.entity.Product;
+import uz.pizzaking.entity.enums.Languages;
 import uz.pizzaking.entity.enums.States;
 import uz.pizzaking.service.AdminService;
 import uz.pizzaking.service.AuthService;
+import uz.pizzaking.utils.Messages;
 
 import java.io.File;
 import java.util.List;
@@ -28,9 +31,35 @@ public class MainBot extends TelegramLongPollingBot {
         if (update.hasMessage()) {
             new AuthService(this).service(update);
         } else if (update.hasCallbackQuery()) {
-            responseToUser(update.getCallbackQuery().getData());
+            if (update.getCallbackQuery().getData().startsWith("id")) {
+                responseToUser(update.getCallbackQuery().getData());
+            } else if (update.getCallbackQuery().getData().startsWith("addCart")) {
+                addToCart(update.getCallbackQuery().getData());
+            }
+
         }
     }
+
+    private void addToCart(String data) {
+
+        String[] parts = data.replace("addCart", "").split("_");
+
+        Long chatId = Long.parseLong(parts[0]);
+        String productName = parts[1];
+
+        Product product = products.stream()
+                .filter(p -> p.getNameEn().equals(productName))
+                .findFirst()
+                .orElse(null);
+        if (product != null && users.get(chatId) != null) {
+            users.get(chatId).getBasket().getProducts().add(product);
+        }
+
+        Languages language = users.get(chatId).getLanguage();
+
+        sendMessage(chatId, Messages.product_add_success(language));
+    }
+
 
     private void responseToUser(String data) {
         AdminService.replyId = Long.parseLong(data.substring(data.indexOf("id") + 2, data.indexOf("msgId")));

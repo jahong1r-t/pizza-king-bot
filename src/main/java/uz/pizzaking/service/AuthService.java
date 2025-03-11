@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import uz.pizzaking.bot.MainBot;
+import uz.pizzaking.entity.Basket;
 import uz.pizzaking.entity.User;
 import uz.pizzaking.entity.enums.Languages;
 import uz.pizzaking.entity.enums.States;
@@ -44,7 +45,7 @@ public class AuthService {
                             state.put(chatId, States.LANGUAGE_SELECTION);
                         }
                         case UZ, EN, RU -> {
-                            User user = new User(chatId, null, null, null, null, null, null);
+                            User user = new User(chatId, null, null, null, null, new Basket(chatId, new ArrayList<>()), null, null);
                             Languages lang = text.equals(UZ) ? Languages.UZBEK : text.equals(EN) ? Languages.ENGLISH : Languages.RUSSIAN;
                             user.setLanguage(lang);
                             users.put(chatId, user);
