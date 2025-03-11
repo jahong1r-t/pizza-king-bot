@@ -16,13 +16,14 @@ import uz.pizzaking.service.AuthService;
 import uz.pizzaking.utils.Messages;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static uz.pizzaking.db.Datasource.*;
 import static uz.pizzaking.db.Datasource.ADMIN;
 import static uz.pizzaking.utils.Bot.BOT_TOKEN;
 import static uz.pizzaking.utils.Bot.BOT_USERNAME;
-import static uz.pizzaking.utils.Messages.response_to_user;
+import static uz.pizzaking.utils.Messages.*;
 
 public class MainBot extends TelegramLongPollingBot {
 
@@ -35,9 +36,37 @@ public class MainBot extends TelegramLongPollingBot {
                 responseToUser(update.getCallbackQuery().getData());
             } else if (update.getCallbackQuery().getData().startsWith("addCart")) {
                 addToCart(update.getCallbackQuery().getData());
+            } else if (update.getCallbackQuery().getData().startsWith("order")) {
+                sendOrderToAdmin(update.getCallbackQuery().getData());
+            } else if (update.getCallbackQuery().getData().startsWith("conform")) {
+                conformOrder(update.getCallbackQuery().getData());
+            } else if (update.getCallbackQuery().getData().startsWith("reject")) {
+                rejectOrder(update.getCallbackQuery().getData());
             }
-
         }
+    }
+
+    private void conformOrder(String data) {
+        Long chatId = Long.parseLong(data.replace("conform", ""));
+        sendMessage(chatId, conform_order_msg(users.get(chatId).getLanguage()));
+        sendMessage(ADMIN, con_order_admin_msg(adminLanguage));
+        ArrayList<Product> products = users.get(chatId).getBasket().getProducts();
+        ArrayList<Product> orders = users.get(chatId).getOrders().getProducts();
+
+        orders.addAll(products);
+        products.clear();
+    }
+
+    private void rejectOrder(String data) {
+        Long chatId = Long.parseLong(data.replace("reject", ""));
+        sendMessage(ADMIN, rej_order_admin_msg(adminLanguage));
+        sendMessage(chatId, reject_order_msg(users.get(chatId).getLanguage()));
+    }
+
+    private void sendOrderToAdmin(String data) {
+        Long chatId = Long.parseLong(data.replace("order:", ""));
+        sendMessage(ADMIN, getOrderDetailsForAdmin(chatId, adminLanguage), conform_inline(adminLanguage, chatId));
+        sendMessage(chatId, order_send_msg(users.get(chatId).getLanguage()));
     }
 
     private void addToCart(String data) {

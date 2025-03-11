@@ -151,6 +151,55 @@ public interface Messages {
                         keyboard(Util.fries_sub_ru);
     }
 
+    static ReplyKeyboard order_inline(Languages lang, Long chatId) {
+        String[][] data = {{"order:" + chatId.toString()}};
+
+        return lang == UZBEK ? inlineKeyboard(order_uz, data) :
+                lang == ENGLISH ? inlineKeyboard(order_en, data) :
+                        inlineKeyboard(order_ru, data);
+    }
+
+    static ReplyKeyboard conform_inline(Languages lang, Long chatId) {
+        String[][] data = {{"conform" + chatId, "reject" + chatId}};
+
+        return lang == UZBEK ? inlineKeyboard(order_conform_uz, data) :
+                lang == ENGLISH ? inlineKeyboard(order_conform_en, data) :
+                        inlineKeyboard(order_conform_ru, data);
+    }
+
+    static String con_order_admin_msg(Languages lang) {
+        return lang == UZBEK ? "✅ Buyurtmani tasdiqladingiz" :
+                lang == ENGLISH ? "✅ You have confirmed the order" :
+                        "✅ Вы подтвердили заказ";
+    }
+
+    static String rej_order_admin_msg(Languages lang) {
+        return lang == UZBEK ? "❌ Buyurtmani bekor qildingiz" :
+                lang == ENGLISH ? "❌ You have canceled the order" :
+                        "❌ Вы отменили заказ";
+    }
+
+
+    static String order_send_msg(Languages lang) {
+        return lang == UZBEK ? "✅ Buyurtma tasdiqlash uchun yuborildi. ⏳ Buyurtma tasdiqlanguncha kuting." :
+                lang == ENGLISH ? "✅ The order has been sent for confirmation. ⏳ Please wait until the order is confirmed." :
+                        "✅ Заказ отправлен на подтверждение. ⏳ Пожалуйста, подождите, пока заказ будет подтвержден.";
+    }
+
+    static ReplyKeyboard product_inline(Long chatId, Languages lang, String productName) {
+        String[][] data = {{"plus", "minus"}, {"addCart" + chatId + "_" + productName}};
+
+        return lang == UZBEK ? inlineKeyboard(inline_product_uz, data) :
+                lang == ENGLISH ? inlineKeyboard(inline_product_en, data) :
+                        inlineKeyboard(inline_product_ru, data);
+    }
+
+    static ReplyKeyboard response_inline(Languages lang, String data) {
+        return lang == UZBEK ? inlineKeyboard(reply_uz, new String[][]{{data}}) :
+                lang == ENGLISH ? inlineKeyboard(reply_en, new String[][]{{data}}) :
+                        inlineKeyboard(reply_ru, new String[][]{{data}});
+    }
+
     static String getProductDetails(String productName, Languages lang) {
         for (Product product : products) {
             if (product.getNameUz().equals(productName) || product.getNameEn().equals(productName) || product.getNameRu().equals(productName)) {
@@ -170,12 +219,6 @@ public interface Messages {
 
     static ReplyKeyboard product_menu(Languages lang) {
         return keyboard(lang == UZBEK ? product_uz : lang == ENGLISH ? product_en : product_ru);
-    }
-
-    static String to_cart(Languages lang) {
-        return lang == UZBEK ? "Savatga qo'shish 🛒" :
-                lang == ENGLISH ? "Add to cart 🛒" :
-                        "Добавить в корзину 🛒";
     }
 
     static String product_add_success(Languages lang) {
@@ -227,6 +270,18 @@ public interface Messages {
                         "✅ Язык успешно изменен";
     }
 
+    static String conform_order_msg(Languages lang) {
+        return lang == UZBEK ? "✅ Buyurtmangiz tasdiqlandi. Kutganingiz uchun rahmat!" :
+                lang == ENGLISH ? "✅ Your order has been confirmed. Thank you for waiting!" :
+                        "✅ Ваш заказ подтвержден. Спасибо за ожидание!";
+    }
+
+    static String reject_order_msg(Languages lang) {
+        return lang == UZBEK ? "❌ Buyurtmangiz tasdiqlanmadi. Iltimos, qayta urinib ko‘ring!" :
+                lang == ENGLISH ? "❌ Your order has not been confirmed. Please try again! " :
+                        "❌ Ваш заказ не подтвержден. Пожалуйста, попробуйте еще раз!";
+    }
+
     static String response_to_user(Languages lang, Long chatId) {
         uz.pizzaking.entity.User user = users.get(chatId);
 
@@ -262,6 +317,54 @@ public interface Messages {
                                 + "📞 Номер: " + phoneNumber + "\n"
                                 + "💬 Сообщение: " + text + "\n";
     }
+
+    static String getOrdersDetails(Long chatId, Languages lang) {
+        uz.pizzaking.entity.User user = users.get(chatId);
+        if (user == null || user.getOrders() == null || user.getOrders().getProducts().isEmpty()) {
+            return lang == Languages.UZBEK ? "Sizda buyurmalar mavjud emas \uD83D\uDCE6" :
+                    lang == Languages.ENGLISH ? "You have no orders \uD83D\uDCE6" :
+                            "У вас нет заказов \uD83D\uDCE6";
+        }
+
+        List<Product> orderProducts = user.getOrders().getProducts();
+        StringBuilder basketDetails = new StringBuilder();
+        int totalPrice = 0;
+
+        basketDetails.append(lang == Languages.UZBEK ? "📋 Sizning buyurtmalaringiz:\n\n" :
+                lang == Languages.ENGLISH ? "📋 Your orders:\n\n" :
+                        "📋 Ваши заказы:\n\n");
+
+        Map<Product, Integer> productCount = new HashMap<>();
+        for (Product product : orderProducts) {
+            productCount.put(product, productCount.getOrDefault(product, 0) + 1);
+        }
+
+        int index = 1;
+        for (Map.Entry<Product, Integer> entry : productCount.entrySet()) {
+            Product product = entry.getKey();
+            int quantity = entry.getValue();
+            String name = lang == Languages.UZBEK ? product.getNameUz() :
+                    lang == Languages.ENGLISH ? product.getNameEn() :
+                            product.getNameRu();
+            int price = product.getPrice();
+            int subtotal = price * quantity;
+
+            basketDetails.append(String.format("%d. %s - %d x %,d = %,d %s\n",
+                    index++, name, quantity, price, subtotal,
+                    lang == Languages.UZBEK ? "so‘m" :
+                            lang == Languages.ENGLISH ? "sum" :
+                                    "сум"));
+            totalPrice += subtotal;
+        }
+
+        basketDetails.append("\n");
+        basketDetails.append(lang == Languages.UZBEK ? String.format("Jami: %,d so‘m", totalPrice) :
+                lang == Languages.ENGLISH ? String.format("Total: %,d sum", totalPrice) :
+                        String.format("Итого: %,d сум", totalPrice));
+
+        return basketDetails.toString();
+    }
+
 
     static String getBasketDetails(Long chatId, Languages lang) {
         uz.pizzaking.entity.User user = users.get(chatId);
@@ -309,6 +412,62 @@ public interface Messages {
 
         return basketDetails.toString();
     }
+
+    static String getOrderDetailsForAdmin(Long chatId, Languages lang) {
+        uz.pizzaking.entity.User user = users.get(chatId);
+        if (user == null || user.getBasket() == null || user.getBasket().getProducts().isEmpty()) {
+            return lang == Languages.UZBEK ? "Hozircha hech qanday buyurtma yo‘q 📦" :
+                    lang == Languages.ENGLISH ? "No orders at the moment 📦" :
+                            "Заказов пока нет 📦";
+        }
+
+        List<Product> basketProducts = user.getBasket().getProducts();
+        StringBuilder orderDetails = new StringBuilder();
+        int totalPrice = 0;
+
+        orderDetails.append(lang == Languages.UZBEK ? "📦 Buyurtma tafsilotlari:\n\n" :
+                lang == Languages.ENGLISH ? "📦 Order details:\n\n" :
+                        "📦 Детали заказа:\n\n");
+
+        Map<Product, Integer> productCount = new HashMap<>();
+        for (Product product : basketProducts) {
+            productCount.put(product, productCount.getOrDefault(product, 0) + 1);
+        }
+
+        int index = 1;
+        for (Map.Entry<Product, Integer> entry : productCount.entrySet()) {
+            Product product = entry.getKey();
+            int quantity = entry.getValue();
+            String name = lang == Languages.UZBEK ? product.getNameUz() :
+                    lang == Languages.ENGLISH ? product.getNameEn() :
+                            product.getNameRu();
+            int price = product.getPrice();
+            int subtotal = price * quantity;
+
+            orderDetails.append(String.format("%d. %s - %d x %,d = %,d %s\n",
+                    index++, name, quantity, price, subtotal,
+                    lang == Languages.UZBEK ? "so‘m" :
+                            lang == Languages.ENGLISH ? "sum" :
+                                    "сум"));
+            totalPrice += subtotal;
+        }
+
+        orderDetails.append("\n");
+        orderDetails.append(lang == Languages.UZBEK ? String.format("💰 Umumiy narx: %,d so‘m", totalPrice) :
+                lang == Languages.ENGLISH ? String.format("💰 Total price: %,d sum", totalPrice) :
+                        String.format("💰 Общая сумма: %,d сум", totalPrice));
+
+        String phoneNumber = user.getPhoneNumber() != null ? user.getPhoneNumber() : "Noma'lum 📞";
+        String username = user.getUsername() != null ? "@" + user.getUsername() : "Noma'lum 👤";
+
+        orderDetails.append("\n\n");
+        orderDetails.append(lang == Languages.UZBEK ? String.format("👤 Foydalanuvchi: %s\n📞 Telefon: %s", username, phoneNumber) :
+                lang == Languages.ENGLISH ? String.format("👤 User: %s\n📞 Phone: %s", username, phoneNumber) :
+                        String.format("👤 Пользователь: %s\n📞 Телефон: %s", username, phoneNumber));
+
+        return orderDetails.toString();
+    }
+
 
     static String getUserInfo(uz.pizzaking.entity.User user, Languages adminLang) {
         String username = user.getUsername() != null ? "@" + user.getUsername() :
